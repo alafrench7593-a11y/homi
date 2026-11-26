@@ -250,7 +250,10 @@ export default function RootLayout() {
         persistOptions={{
           persister,
           maxAge: 1000 * 60 * 60 * 24 * 7,
-          dehydrateOptions: { shouldDehydrateQuery: (q) => q.state.status === 'success' && !q.queryKey.some((k) => PRIVATE_KEYS.includes(String(k))) },
+          // 26/11/2026 (profil : ~390 ms à chaque sauvegarde) : le texte intégral des articles (index d'Aura) n'est plus
+          // réécrit sur l'appareil à chaque changement — il est rechargé à l'ouverture d'Aura
+          dehydrateOptions: { shouldDehydrateQuery: (q) => q.state.status === 'success' && !q.queryKey.some((k) => PRIVATE_KEYS.includes(String(k)))
+            && !(q.queryKey.includes('articles') && q.queryKey.includes('full')) },
         }}
       >
         <AuthProvider>

@@ -2,3 +2,5 @@ node_modules/
 renders/
 quality-control/frames/
 out/
+public/audio/*.wav
+quality-control/pub30/

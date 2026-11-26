@@ -20,7 +20,7 @@ import { Tappable } from '@/components/Tappable';
 import { tint } from '@/components/ToolGlyph';
 import { useActivePregnancy, useChildren, useFullArticles, useProfile } from '@/lib/data/hooks';
 import { childAge } from '@/lib/domain/child';
-import { answer, buildIndex, type KbIndex, type LocalAnswer } from '@/lib/localAI/engine';
+import { answer, buildIndexInChunks, type KbIndex, type LocalAnswer } from '@/lib/localAI/engine';
 
 let CACHE: { n: number; index: KbIndex } | null = null;
 import { ui8 as frUi8 } from '@/i18n/fr/ui8';
@@ -140,12 +140,15 @@ export default function LocalAssistant() {
     const data = articlesQ.data;
     if (!data) return;
     if (CACHE?.n === data.length) { setIndex(CACHE.index); return; }
+    let cancelled = false;
     const id = setTimeout(() => {
-      const built = buildIndex(data.map((a) => ({ slug: a.slug, title: a.title, summary: a.summary, body_md: a.body_md, tags: a.tags, sources: a.sources, min_age_months: a.min_age_months, max_age_months: a.max_age_months, journeys: a.journeys })));
-      CACHE = { n: data.length, index: built };
-      setIndex(built);
+      void buildIndexInChunks(data.map((a) => ({ slug: a.slug, title: a.title, summary: a.summary, body_md: a.body_md, tags: a.tags, sources: a.sources, min_age_months: a.min_age_months, max_age_months: a.max_age_months, journeys: a.journeys })), { isCancelled: () => cancelled }).then((built) => {
+        if (!built || cancelled) return;
+        CACHE = { n: data.length, index: built };
+        setIndex(built);
+      });
     }, 30);
-    return () => clearTimeout(id);
+    return () => { cancelled = true; clearTimeout(id); };
   }, [articlesQ.data]);
   const [text, setText] = useState(typeof params.q === 'string' ? params.q : '');
   const [msgs, setMsgs] = useState<Msg[]>([]);
