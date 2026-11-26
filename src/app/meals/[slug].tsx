@@ -24,7 +24,7 @@ import { useInvalidate } from '@/lib/data/hooks';
 import { formatQty, incompatibility, newFoods, scaleQty, shoppingList } from '@/lib/recipes/engine';
 import { INGREDIENTS } from '@/lib/recipes/ingredients';
 import { RECIPE_SOURCES } from '@/lib/recipes/sources';
-import { formatDate, t as tr } from '@/i18n';
+import { formatDate, localeTag, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
@@ -87,7 +87,7 @@ export default function RecipeDetail() {
 
       {!r.audiences.includes('pregnancy') ? <ScorePanel recipe={r} band={scoreBandFor(r, profile)} /> : null}
       {(() => { const c = costPerPortion(r, prices.map); return (
-        <View testID="recipe-cost"><Text variant="small" muted>{c.cost != null && c.oldest ? tr('rc.cost.value', { cost: c.cost.toFixed(2).replace('.', ','), date: formatDate(`${c.oldest}T12:00:00`) }) : tr('rc.cost.na')}</Text>
+        <View testID="recipe-cost"><Text variant="small" muted>{c.cost != null && c.oldest ? tr('rc.cost.value', { cost: c.cost.toLocaleString(localeTag(), { minimumFractionDigits: 2, maximumFractionDigits: 2 }), date: formatDate(`${c.oldest}T12:00:00`) }) : tr('rc.cost.na')}</Text>
           {c.cost == null ? <Text variant="caption" muted>{tr('rc.cost.naBody')}</Text> : null}</View>
       ); })()}
       {r.minMonths != null ? <Text variant="small" muted>{tr('rc.ageRange', { from: ageText(r.minMonths), to: ageText(r.maxMonths ?? 120) })}</Text> : null}
@@ -112,7 +112,7 @@ export default function RecipeDetail() {
           const isNew = fresh.includes(x.key);
           return (
             <MotionItem key={x.key + (x.note ?? '')}><View key={x.key + (x.note ?? '')} style={{ flexDirection: 'row', gap: spacing.sm, paddingVertical: 5 }} testID={`ing-${x.key}`}>
-              <Text weight="bold" style={{ minWidth: 84 }}>{formatQty(scaleQty(x.qty, r.servings, n, x.unit), x.unit)}</Text>
+              <Text weight="bold" style={{ minWidth: 84, fontVariant: ['tabular-nums'] }}>{formatQty(scaleQty(x.qty, r.servings, n, x.unit), x.unit)}</Text>
               <Text style={{ flex: 1 }}>{d?.name ?? x.key}{x.note ? ` (${x.note})` : ''}{x.optional ? ` · ${tr('rc.optional')}` : ''}{isNew && profile.name ? ` · ${tr('rc.newFor', { name: profile.name })}` : ''}</Text>
             </View></MotionItem>
           );
@@ -131,19 +131,19 @@ export default function RecipeDetail() {
         return (
           <Tappable key={k} accessibilityRole="checkbox" accessibilityState={{ checked: done }} accessibilityLabel={`${k + 1}. ${s}`} testID={`rc-step-${k}`}
             onPress={() => { haptic('selection'); setDoneSteps((d) => (d.includes(k) ? d.filter((x) => x !== k) : [...d, k])); }}
-            style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start', paddingVertical: 4 }}>
+            style={{ flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-start', paddingVertical: spacing.xxs, minHeight: 44 }}>
             <View style={{ width: 28, height: 28, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: done ? t.colors.gold : 'transparent', borderWidth: 2, borderColor: done ? t.colors.gold : t.colors.primary }}>
               {done ? null : <Text variant="caption" weight="bold" color={t.colors.primary}>{k + 1}</Text>}
-              <CheckMark checked={done} size={17} color="#FFFFFF" style={{ position: 'absolute' }} />
+              <CheckMark checked={done} size={17} color={t.colors.primaryText} style={{ position: 'absolute' }} />
             </View>
-            <Text style={{ flex: 1, opacity: done ? 0.55 : 1, textDecorationLine: done ? 'line-through' : 'none' }}>{s}</Text>
+            <Text muted={done} style={{ flex: 1, textDecorationLine: done ? 'line-through' : 'none' }}>{s}</Text>
           </Tappable>
         );
       })}
       <Sheet visible={cookAt != null} onClose={() => setCookAt(null)} title={cookAt != null ? tr('mb.rc.stepOf', { n: cookAt + 1, total: r.steps.length }) : ''}>
         {cookAt != null ? (
           <View style={{ gap: spacing.md }} testID="rc-cook-sheet">
-            <View style={{ height: 6, borderRadius: 3, backgroundColor: t.colors.border, overflow: 'hidden' }}>
+            <View style={{ height: 6, borderRadius: 3, backgroundColor: t.colors.border, overflow: 'hidden' }} accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: r.steps.length, now: cookAt + 1 }}>
               <View style={{ width: `${((cookAt + 1) / r.steps.length) * 100}%`, height: 6, backgroundColor: t.colors.gold }} />
             </View>
             <Text style={{ fontSize: 22, lineHeight: 31 }}>{r.steps[cookAt]}</Text>
@@ -189,7 +189,7 @@ export default function RecipeDetail() {
       <SectionTitle title={tr('rc.sources')} />
       <View testID="recipe-sources" style={{ gap: 2 }}>
         {r.sources.map((s) => { const src = RECIPE_SOURCES[s]; return src ? (
-          <Tappable key={s} accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: 36, justifyContent: 'center' }}>
+          <Tappable key={s} accessibilityRole="link" onPress={() => void Linking.openURL(src.url)} style={{ minHeight: 44, justifyContent: 'center' }}>
             <Text variant="small" color={t.colors.primary}>{src.publisher} — {src.title}{src.date ? ` (${formatDate(src.date)})` : ''} · {tr('rc.consulted', { date: formatDate(src.consulted) })}</Text>
           </Tappable>
         ) : null; })}

@@ -29,8 +29,8 @@ export function ScorePanel({ recipe, band: initial }: { recipe: Recipe; band: Ag
             <Text variant="caption" weight="bold" muted>{tr('rc.score.title')}</Text>
             <Text variant="caption" muted>{tr('rc.score.for', { band: tr(`rc.band.${band}` as TKey) })}</Text>
           </View>
-          <View style={{ minWidth: 72, paddingHorizontal: 12, paddingVertical: 6, borderRadius: radius.pill, backgroundColor: t.colors.surfaceAlt, alignItems: 'center' }}>
-            <Text variant="heading" testID="recipe-score-value">{s.score}</Text>
+          <View accessible accessibilityLabel={tr('rc.score.badge', { n: s.score })} style={{ minWidth: 72, paddingHorizontal: spacing.sm, paddingVertical: spacing.xxs, borderRadius: radius.md, backgroundColor: t.colors.surfaceAlt, alignItems: 'center' }}>
+            <Text variant="heading" style={{ fontVariant: ['tabular-nums'] }} testID="recipe-score-value">{s.score}</Text>
             <Text variant="caption" muted>/100</Text>
           </View>
         </Row>
@@ -40,7 +40,7 @@ export function ScorePanel({ recipe, band: initial }: { recipe: Recipe; band: Ag
         {s.strengths.length ? <View style={{ marginTop: spacing.xs }}><Text weight="bold">{tr('rc.score.strengths')}</Text>{s.strengths.map((k) => <Text key={k} variant="small">• {tr(`rc.score.plus.${k}` as TKey)}</Text>)}</View> : null}
         {s.improvements.length ? <View style={{ marginTop: spacing.xs }}><Text weight="bold">{tr('rc.score.improve')}</Text>{s.improvements.map((k) => <Text key={k} variant="small">• {tr(`rc.score.tip.${k}` as TKey)}</Text>)}</View> : null}
         <Text variant="small" style={{ marginTop: spacing.xs }}>{tr('rc.score.portion', { kcal: Math.round(p.kcal), prot: fmt(p.prot), fiber: fmt(p.fiber), sugar: fmt(p.addedSugar), salt: fmt(p.salt, 2), iron: fmt(p.iron), calcium: Math.round(p.calcium) })}</Text>
-        <Tappable accessibilityRole="button" onPress={() => setOpen(!open)} style={{ minHeight: 40, justifyContent: 'center' }} testID="score-details">
+        <Tappable accessibilityRole="button" accessibilityState={{ expanded: open }} onPress={() => setOpen(!open)} style={{ minHeight: 44, justifyContent: 'center' }} testID="score-details">
           <Text variant="small" weight="bold" color={t.colors.primary}>{open ? tr('rc.score.hide') : tr('rc.score.how')}</Text>
         </Tappable>
         {open ? (
@@ -48,19 +48,19 @@ export function ScorePanel({ recipe, band: initial }: { recipe: Recipe; band: Ag
             <MotionList style={{ gap: 2 }}>{s.parts.map((x) => (
               <MotionItem key={x.key}><Row key={x.key} style={{ justifyContent: 'space-between' }}>
                 <Text variant="small" style={{ flex: 1 }}>{tr(`rc.score.part.${x.key}` as TKey, { v: x.value, u: x.unit })}</Text>
-                <Text variant="small" weight="bold">{x.points > 0 && x.key !== 'base' ? '+' : ''}{x.points}</Text>
+                <Text variant="small" weight="bold" style={{ fontVariant: ['tabular-nums'] }}>{x.points > 0 && x.key !== 'base' ? '+' : ''}{x.points}</Text>
               </Row></MotionItem>
             ))}</MotionList>
-            <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('rc.score.method')}</Text>
+            <Text variant="caption" muted style={{ marginTop: spacing.xxs }}>{tr('rc.score.method')}</Text>
             {s.approximations.map((a) => <Text key={a} variant="caption" muted>• {a}</Text>)}
             {SCORE_SOURCES.map((x) => (
-              <Tappable key={x.url} accessibilityRole="link" onPress={() => void Linking.openURL(x.url)} style={{ minHeight: 32, justifyContent: 'center' }}>
+              <Tappable key={x.url} accessibilityRole="link" onPress={() => void Linking.openURL(x.url)} style={{ minHeight: 44, justifyContent: 'center' }}>
                 <Text variant="caption" color={t.colors.primary}>{x.label} ({formatDate(`${x.date}T12:00:00`)})</Text>
               </Tappable>
             ))}
           </View>
         ) : null}
-        <Text variant="caption" muted style={{ marginTop: 4 }}>{tr('rc.score.disclaimer')}</Text>
+        <Text variant="caption" muted style={{ marginTop: spacing.xxs }}>{tr('rc.score.disclaimer')}</Text>
       </Card>
     </View>
   );

@@ -44,8 +44,8 @@ export default function Pantry() {
         const list = shown.filter((k) => INGREDIENTS[k].aisle === a && !have.includes(k));
         if (!list.length) return null;
         return (
-          <View key={a} style={{ gap: 4 }}>
-            <Text variant="caption" weight="bold" muted>{tr(`rc.aisle.${a}` as TKey)}</Text>
+          <View key={a} style={{ gap: spacing.xxs }}>
+            <Text variant="caption" weight="bold" muted accessibilityRole="header">{tr(`rc.aisle.${a}` as TKey)}</Text>
             <Row wrap>{list.map((k) => <Chip key={k} label={INGREDIENTS[k].name} onPress={() => toggle(k)} accessibilityLabel={`${tr('rc.pantry.have')} ${INGREDIENTS[k].name}`} />)}</Row>
           </View>
         );
