@@ -75,4 +75,23 @@ export const HUBS = [
     ],
     faq: [['Comment contacter HOMI pour un article ?', 'Par e-mail à homixyz@gmail.com ou via la page contact ; une démonstration de l’application est possible sur demande.'],
       ['Peut-on reprendre les captures et logos ?', 'Oui, pour parler de HOMI dans un article ou un reportage, sans modification du logo.']] },
+  { slug: 'tarifs', name: 'Tarifs', title: 'Tarifs HOMI Premium — mensuel, 6 mois ou annuel, essai gratuit de 3 jours',
+    desc: 'Les formules HOMI Premium : 14,99 € par mois, 69,99 € pour 6 mois ou 119,99 € par an, avec un essai gratuit de 3 jours selon éligibilité. Un abonnement couvre tout le foyer.',
+    eyebrow: 'Tarifs', h1: ['Un abonnement.', 'Toute la famille.'], shot: 'outils',
+    lead: 'HOMI Premium ouvre tous les outils, pour vous et l’autre parent. Ces formules s’appliqueront à la sortie de l’application sur l’App Store.',
+    cta: [['Être prévenu du lancement', 'mailto:homixyz@gmail.com?subject=Pr%C3%A9venez-moi%20au%20lancement%20de%20HOMI'], ['Voir les fonctionnalités', '/fonctionnalites']],
+    extra: `<section class="chapter tight" aria-labelledby="t-plans"><div class="wrap"><h2 id="t-plans" class="h2">Les formules</h2><ul class="plans">
+<li class="card plan plan-best"><p class="plan-badge">Le plus avantageux</p><h3>Annuel</h3><p class="plan-price">119,99 €<span> / an</span></p><p class="plan-eq">soit environ 10 € par mois, −33 % par rapport au mensuel</p></li>
+<li class="card plan"><h3>6 mois</h3><p class="plan-price">69,99 €<span> / 6 mois</span></p><p class="plan-eq">soit environ 11,67 € par mois, −22 %</p></li>
+<li class="card plan"><h3>Mensuel</h3><p class="plan-price">14,99 €<span> / mois</span></p><p class="plan-eq">sans engagement de durée</p></li>
+</ul><p class="fine">Essai gratuit de 3 jours sur chaque formule, selon les conditions d’éligibilité de l’App Store. Prix TTC en euros ; le prix facturé est celui affiché par l’App Store au moment de l’achat.</p></div></section>`,
+    sections: [
+      ['Inclus dans Premium', ['Tous les outils de HOMI : grossesse, bébé, enfant, organisation familiale, couple, communauté.', 'Partagé avec l’autre parent du foyer.', 'Aura en ligne avec un abonnement actif, dans la limite d’utilisation de la formule (non incluse pendant l’essai).']],
+      ['Toujours gratuit', ['Numéros et pages d’urgence.', 'Alertes officielles de rappel de produits.', 'Export et suppression de vos données.']],
+      ['Renouvellement', ['L’abonnement se renouvelle automatiquement à la fin de chaque période.', 'Résiliable à tout moment dans les réglages de votre identifiant Apple, au moins 24 h avant le renouvellement.', 'Sans résiliation avant la fin de l’essai, la formule choisie est facturée.']],
+    ],
+    faq: [['Combien coûte HOMI ?', 'HOMI Premium coûte 14,99 € par mois, 69,99 € pour 6 mois ou 119,99 € par an, avec un essai gratuit de 3 jours selon éligibilité. Ces prix s’appliqueront à la sortie sur l’App Store.'],
+      ['L’abonnement couvre-t-il les deux parents ?', 'Oui, un abonnement est partagé avec l’autre parent du foyer.'],
+      ['Comment résilier ?', 'Dans les réglages de votre identifiant Apple, rubrique Abonnements, au moins 24 h avant la date de renouvellement.'],
+      ['Aura est-elle incluse pendant l’essai ?', 'Non : l’essai donne accès aux outils ; Aura en ligne demande un abonnement actif.']] },
 ];
