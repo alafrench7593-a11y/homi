@@ -8,7 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { GlassSegmentedControl, GlassSheet } from '@/components/glass';
 import { confirm, useToast } from '@/components/Overlays';
 import { Banner, Button, Card, Chip, Field, IconButton, ListGroup, ListRow, Row, Text } from '@/components/ui';
@@ -23,9 +23,12 @@ import {
 } from '@/lib/data/hooks-childcarePrep';
 import {
   hoursCsv, hoursLabel, monthEnd, monthStart, mondayOfWeek, normTime, pairShifts, periodSummary, type AbsenceKind, type Shift,
+  localDay,
 } from '@/features/childcarePrep/domain';
 import { ChildPicker, usePrepChild } from '@/features/childcarePrep/ui';
 
+/** Totaux comparés d'une période à l'autre : chiffres tabulaires. */
+const TABULAR = { fontVariant: ['tabular-nums' as const] };
 const H = (min: number) => hoursLabel(min, tr('gp.unit.h'));
 const hhmm = (iso: string | undefined) => (iso ? new Date(iso).toTimeString().slice(0, 5) : '');
 const atOf = (day: string, time: string) => new Date(`${day}T${time}:00`).toISOString();
@@ -96,7 +99,7 @@ export default function CareHours() {
   const shifts = useMemo(() => pairShifts(punchesQ.data ?? []), [punchesQ.data]);
   const sum = useMemo(() => periodSummary(from, to, shifts, schedules.map((s) => ({ ...s, days: Array.isArray(s.days) ? s.days : [] })), absences), [from, to, shifts, schedules, absences]);
   const step = (dir: number) => setAnchor((a) => (mode === 'week' ? addDays(mondayOfWeek(a), dir * 7) : monthStart(dir > 0 ? addDays(monthEnd(a), 1) : addDays(monthStart(a), -1))));
-  const periodLabel = mode === 'week' ? tr('gp.hr.weekOf', { date: formatDate(from, { day: 'numeric', month: 'long' }) }) : formatDate(from, { month: 'long', year: 'numeric' });
+  const periodLabel = mode === 'week' ? tr('gp.hr.weekOf', { date: formatDate(localDay(from), { day: 'numeric', month: 'long' }) }) : formatDate(localDay(from), { month: 'long', year: 'numeric' });
 
   async function exportCsv() {
     const kinds = { child: tr('gp.ab.kind.child'), caregiver_leave: tr('gp.ab.kind.caregiver_leave'), closure: tr('gp.ab.kind.closure') } as Record<AbsenceKind, string>;
@@ -126,8 +129,8 @@ export default function CareHours() {
       </View>
       <Card tone="soft" testID="gp-hr-summary">
         <Row wrap gap={spacing.lg}>
-          <View><Text variant="small" muted>{tr('gp.hr.worked')}</Text><Text variant="title" testID="gp-hr-worked">{H(sum.workedMin)}</Text></View>
-          <View><Text variant="small" muted>{tr('gp.hr.planned')}</Text><Text variant="title">{H(sum.plannedMin)}</Text></View>
+          <View><Text variant="small" muted>{tr('gp.hr.worked')}</Text><Text variant="title" style={TABULAR} maxFontSizeMultiplier={1.4} testID="gp-hr-worked">{H(sum.workedMin)}</Text></View>
+          <View><Text variant="small" muted>{tr('gp.hr.planned')}</Text><Text variant="title" style={TABULAR} maxFontSizeMultiplier={1.4}>{H(sum.plannedMin)}</Text></View>
         </Row>
         <View style={{ gap: 2, marginTop: spacing.xs }}>
           {sum.childDays ? <Text variant="small">{tr('gp.hr.childDays', { count: sum.childDays })}</Text> : null}
@@ -136,14 +139,14 @@ export default function CareHours() {
           {sum.incomplete ? <Text variant="small" weight="bold">{tr('gp.hr.incomplete', { count: sum.incomplete })}</Text> : null}
         </View>
       </Card>
-      {punchesQ.isLoading && !punchesQ.data ? <Skeleton rows={3} /> : !list.length ? <Card tone="soft"><Text muted>{tr('gp.hr.noShift')}</Text></Card> : (
+      {punchesQ.isLoading && !punchesQ.data ? <Skeleton rows={3} /> : punchesQ.isError && !punchesQ.data ? <ErrorView error={punchesQ.error} onRetry={() => void punchesQ.refetch()} /> : !list.length ? <Card tone="soft"><Text muted>{tr('gp.hr.noShift')}</Text></Card> : (
         <ListGroup testID="gp-hr-list">
           {list.map((s, i) => {
             const a = s.arrival ? hhmm(s.arrival.at) : tr('gp.hr.missing');
             const b = s.departure ? hhmm(s.departure.at) : tr('gp.hr.missing');
             const pending = s.arrival?._pending || s.departure?._pending;
             return (
-              <ListRow key={`${s.date}-${i}`} icon={s.arrival && s.departure ? 'clock' : 'alert-circle'} title={formatDate(s.date, { weekday: 'long', day: 'numeric', month: 'long' })}
+              <ListRow key={`${s.date}-${i}`} icon={s.arrival && s.departure ? 'clock' : 'alert-circle'} title={formatDate(localDay(s.date), { weekday: 'long', day: 'numeric', month: 'long' })}
                 subtitle={`${tr('gp.hr.arrival')} ${a} · ${tr('gp.hr.departure')} ${b}${pending ? ` · ${tr('gp.hr.pending')}` : ''}`}
                 value={s.minutes ? H(s.minutes) : undefined} onPress={pending ? undefined : () => setEditing(s)} testID={`gp-hr-shift-${s.date}`} />
             );

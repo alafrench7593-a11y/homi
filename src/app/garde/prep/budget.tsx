@@ -7,7 +7,7 @@ import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
-import { EmptyState, Skeleton } from '@/components/States';
+import { EmptyState, ErrorView, Skeleton } from '@/components/States';
 import { Banner, Button, Card, Text } from '@/components/ui';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, spacing } from '@/theme/tokens';
@@ -32,7 +32,7 @@ export default function CareBudget() {
   if (!householdId) return <Screen back title={tr('gp.tool.budget')} tool={false}><EmptyState icon="lock" title={tr('gp.parentOnly')} body={tr('gp.parentOnlyBody')} /></Screen>;
   return (
     <Screen back title={tr('gp.tool.budget')} subtitle={tr('gp.bd.intro')} tool={false}>
-      {!list.length ? (
+      {cands.isError && !cands.data ? <ErrorView error={cands.error} onRetry={() => void cands.refetch()} /> : !list.length ? (
         <EmptyState icon="credit-card" title={tr('gp.cand.emptyTitle')} body={tr('gp.bd.empty')} action={{ label: tr('gp.cand.add'), onPress: () => router.push('/garde/prep/candidats?new=1' as never) }} />
       ) : (
         <>
@@ -47,8 +47,8 @@ export default function CareBudget() {
                 <Text variant="heading">{c.name}</Text>
                 <Text variant="small" muted>{`${kindLabel(c.kind)} · ${statusLabel(c.status)}`}</Text>
                 {cost.complete ? (
-                  <View style={{ gap: 4, marginTop: spacing.xs }}>
-                    <Text variant="title" testID={`gp-bd-total-${c.id}`}>{tr('gp.cand.perMonth', { amount: money(cost.total) })}</Text>
+                  <View style={{ gap: spacing.xxs, marginTop: spacing.xs }}>
+                    <Text variant="title" style={{ fontVariant: ['tabular-nums'] }} maxFontSizeMultiplier={1.4} testID={`gp-bd-total-${c.id}`}>{tr('gp.cand.perMonth', { amount: money(cost.total) })}</Text>
                     {/* barre proportionnelle : décorative, le montant est écrit au-dessus */}
                     <View importantForAccessibility="no-hide-descendants" accessibilityElementsHidden style={{ height: 8, borderRadius: radius.sm, backgroundColor: t.colors.surfaceAlt, overflow: 'hidden' }}>
                       <View style={{ width: `${Math.round(share * 100)}%`, height: 8, borderRadius: radius.sm, backgroundColor: c.id === cheapest?.id ? t.colors.success : t.colors.primary }} />
