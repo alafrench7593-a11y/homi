@@ -252,8 +252,9 @@
   var S = [
     { say: 'Il vient de boire 150 ml', t: 'Biberon de 150 ml à 15 h 40.', s: 'À enregistrer pour Léa ?', ok: 'Validé, enregistré ✓', n: [['Biberons', '+ 150 ml à 15 h 40'], ['Statistiques', 'Total du jour : 600 ml'], ['Relais', 'Ajouté au résumé pour Julien']] },
     { say: 'Il dort depuis 14 h 20', t: 'Sieste commencée à 14 h 20.', s: 'Je lance le minuteur ?', ok: 'Validé, minuteur lancé ✓', n: [['Sommeil', 'Sieste en cours depuis 14 h 20'], ['Planning', 'Prochain biberon recalculé'], ['Coparent', 'Julien voit la sieste en cours']] },
-    { say: 'Ajoute cette photo à son histoire', t: 'Photo du 12 mai, chapitre « Premiers mois ».', s: 'Je propose un court texte, vous le relisez ?', ok: 'Relu et validé ✓', n: [['Album photo', 'Photo rangée au 12 mai'], ['Aura', 'Texte proposé, à relire'], ['Mon histoire', 'Nouvelle page après validation']] },
+    { say: 'Ajoute cette photo à son histoire', t: 'Photo du 12 mai, chapitre « Premiers mois ».', s: 'Je propose un court texte, vous le relisez ?', ok: 'Relu et validé ✓', n: [['Album photo', 'Photo rangée au 12 mai'], ['Aura', 'Texte proposé, à relire'], ['Mon histoire', 'Nouvelle page après validation']] },
   ];
+  try { if (root.dataset.scenarios) S = JSON.parse(root.dataset.scenarios); } catch (e) { /* scénarios par défaut */ }
   var tabs = root.querySelectorAll('[data-scn]'), nodes = root.querySelectorAll('[data-node]'), timers = [];
   function q(sel) { return root.querySelector(sel); }
   function later(fn, ms) { timers.push(setTimeout(fn, reduce ? 0 : ms)); }
