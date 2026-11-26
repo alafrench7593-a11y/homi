@@ -55,11 +55,11 @@ export const HUBS = [
     cta: [['Voir les fonctionnalités', '/fonctionnalites'], ['Nous contacter', '/contact']],
     sections: [
       ['Ce qu’est HOMI', ['Une application familiale : grossesse, bébé, enfant, organisation du foyer, couple et communauté.', '121 outils réels, utilisables dans le navigateur ; l’application iPhone est en préparation.', 'Disponible en français, anglais, espagnol, allemand et italien.']],
-      ['Qui l’édite', ['Éditeur : David PRINCIVIL, entrepreneur individuel (France).', 'Contact : homixyz@gmail.com · Instagram : @homi_famille.']],
+      ['Nous joindre', ['Contact : homixyz@gmail.com · Instagram : @homi_famille.', 'Informations sur l’éditeur : page Mentions légales.']],
       ['Nos principes', ['HOMI n’est pas un dispositif médical et ne remplace pas un professionnel de santé.', 'Aura, l’assistante, ne pose aucun diagnostic et ne calcule jamais de dose de médicament.', 'Les données d’une famille ne sont partagées qu’avec les membres du foyer qu’elle invite.']],
     ],
     faq: [['Qu’est-ce que HOMI ?', 'HOMI est une application familiale qui réunit le suivi de grossesse, du bébé et de l’enfant, l’organisation du foyer (tâches, agenda, relais entre parents) et une assistante, Aura, dans un espace partagé par la famille.'],
-      ['Qui édite HOMI ?', 'HOMI est édité par David PRINCIVIL, entrepreneur individuel en France. Contact : homixyz@gmail.com.'],
+      ['Comment contacter HOMI ?', 'Par e-mail à homixyz@gmail.com ou via la page contact du site. Les informations légales sur l’éditeur figurent dans les mentions légales.'],
       ['HOMI est-il un outil médical ?', 'Non. HOMI aide à noter et à s’organiser ; il ne pose pas de diagnostic et ne remplace pas un professionnel de santé.'],
       ['Sur quels appareils utiliser HOMI ?', 'Dans tout navigateur récent, sur téléphone ou ordinateur. L’application iPhone est en préparation et n’est pas encore sur l’App Store.']] },
   { slug: 'presse', name: 'Espace presse', title: 'Espace presse HOMI — faits, textes, logos et captures',
@@ -70,7 +70,7 @@ export const HUBS = [
     sections: [
       ['HOMI en une phrase', ['HOMI réunit dans une seule application partagée par le foyer le suivi de grossesse, du bébé et de l’enfant, l’organisation familiale et une assistante, Aura.']],
       ['HOMI en un paragraphe', ['HOMI est une application familiale française qui accompagne les parents de la contraception aux 10 ans de l’enfant. Elle rassemble 121 outils réels (contractions, biberons, sommeil, croissance, agenda, tâches, relais entre parents, communauté) dans un espace partagé par le foyer. Son assistante, Aura, retrouve le bon outil à partir d’une phrase et prépare rendez-vous et tâches, que les parents valident. HOMI n’est pas un outil médical : Aura ne pose aucun diagnostic et ne calcule aucune dose de médicament.']],
-      ['Faits clés', ['Éditeur : David PRINCIVIL, entrepreneur individuel (France).', 'Disponible dans le navigateur ; application iPhone en préparation.', '5 langues : français, anglais, espagnol, allemand, italien.', 'Site : www.homifamille.com · Instagram : @homi_famille.']],
+      ['Faits clés', ['Application française.', 'Disponible dans le navigateur ; application iPhone en préparation.', '5 langues : français, anglais, espagnol, allemand, italien.', 'Site : www.homifamille.com · Instagram : @homi_famille.']],
       ['Ressources', ['Logo noir sur blanc et icône (PNG 1024 px) : boutons en haut de page.', 'Captures d’écran réelles de l’application (famille fictive) : accueil, Aura, contractions, charge mentale, communauté.']],
     ],
     faq: [['Comment contacter HOMI pour un article ?', 'Par e-mail à homixyz@gmail.com ou via la page contact ; une démonstration de l’application est possible sur demande.'],
