@@ -7,7 +7,7 @@
  * Aucun diagnostic, aucune promesse (« il fera ses nuits »), aucune culpabilisation. Contenu « À vérifier ».
  */
 import React, { useMemo, useState } from 'react';
-import { Linking, View } from 'react-native';
+import { View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { MiniBars } from '@/components/MiniApp';
@@ -28,6 +28,7 @@ import { formatDate, t as tr } from '@/i18n';
 import { useTheme } from '@/theme/ThemeProvider';
 import { spacing } from '@/theme/tokens';
 import { Tappable } from '@/components/Tappable';
+import { openLink } from '@/lib/links';
 import { ReadingMemory } from '@/features/readTrack/ReadingMemory';
 
 export default function NightHelp() {
@@ -149,7 +150,7 @@ export default function NightHelp() {
 
       <SectionTitle title={tr('nh.sources')} />
       {Object.values(NIGHT_SOURCES).map((s) => (
-        <Tappable key={s.url} accessibilityRole="link" onPress={() => void Linking.openURL(s.url)} style={{ minHeight: 36, justifyContent: 'center' }}>
+        <Tappable key={s.url} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ minHeight: 44, justifyContent: 'center' }}>
           <Text variant="caption" color={t.colors.primary}>{s.label}{s.published ? ` (${formatDate(`${s.published}T12:00:00`)})` : ''} · {tr('rc.consulted', { date: formatDate(`${s.consulted_on}T12:00:00`) })}</Text>
         </Tappable>
       ))}

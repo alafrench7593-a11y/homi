@@ -556,7 +556,7 @@ function SafetyTab({ child, data }: { child: Child; data: PlanData }) {
         {SAFE_SLEEP_POINTS.map((s) => <Text key={s} variant="small" style={{ marginTop: 2 }}>{`• ${s}`}</Text>)}
         <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('u4.sp.officialSrc')}</Text>
         {SAFE_SLEEP_SOURCES.map((s) => (
-          <Tappable key={s.url} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ alignSelf: 'stretch', marginTop: 4 }}>
+          <Tappable key={s.url} accessibilityRole="link" onPress={() => openLink(s.url, toast)} style={{ alignSelf: 'stretch', marginTop: 4, minHeight: 44, justifyContent: 'center' }}>
             <Text variant="caption" color={t.colors.lavender} style={{ flex: 1 }}>
               {tr('u4.sp.srcLine', { label: s.label, pub: new Date(`${s.published}T12:00:00`).toLocaleDateString(localeTag()), cons: new Date(`${s.consulted_on}T12:00:00`).toLocaleDateString(localeTag()) })}
             </Text>
