@@ -75,11 +75,11 @@ const Lonely: React.FC<P> = ({ t, l }) => {
   return (
     <div style={{ opacity: 1 - out }}>
       <div style={{ position: 'absolute', left: mx - 420, top: my - 420, width: 840, height: 840, borderRadius: '50%', background: 'radial-gradient(circle, rgba(233,195,138,.22), transparent 62%)' }} />
-      <Img src={staticFile('art/etape-05.png')} style={{ position: 'absolute', left: mx - (v ? 330 : 280), top: my - (v ? 400 : 340), width: v ? 660 : 560, height: v ? 800 : 680, objectFit: 'contain', opacity: prog(t, 0, 0.8) * (1 - merge * 0.6), filter: 'drop-shadow(0 0 30px rgba(233,195,138,.35))' }} />
+      <Img src={staticFile('art/etape-05.png')} style={{ position: 'absolute', left: mx - (v ? 330 : 280), top: my - (v ? 400 : 340), width: v ? 660 : 560, height: v ? 800 : 680, objectFit: 'contain', opacity: prog(t, 0, 0.8) * (1 - merge * 0.6), transform: `scale(${1 + t * 0.02})`, filter: 'drop-shadow(0 0 30px rgba(233,195,138,.35))' }} />
       {QUESTIONS.map((q, i) => {
         const a = prog(t, 0.4 + i * 0.6, 0.9 + i * 0.6);
         const [x, y] = pos[i]; const cx = v ? W / 2 : 1330; const cy = v ? 560 : 500;
-        return <div key={q} style={{ position: 'absolute', left: mix(merge, x, cx) - 400, width: 800, top: mix(merge, y, cy), textAlign: 'center', transform: `translateY(-50%) scale(${mix(merge, 1, 0.4)})`,
+        return <div key={q} style={{ position: 'absolute', left: mix(merge, x, cx) - 400, width: 800, top: mix(merge, y - t * 6 + Math.sin(t * 1.6 + i) * 4, cy), textAlign: 'center', transform: `translateY(-50%) scale(${mix(merge, 1 + t * 0.015, 0.4)})`,
           fontSize: v ? 50 : 46, fontWeight: 700, color: '#EDE8FA', letterSpacing: '-0.02em', opacity: a * (1 - merge), filter: `blur(${(1 - a) * 12 + merge * 16}px)` }}>{q}</div>;
       })}
       <div style={{ position: 'absolute', left: (v ? W / 2 : 1330) - 60, top: (v ? 560 : 500) - 60, width: 120, height: 120, borderRadius: '50%', background: 'radial-gradient(circle, #fff, rgba(169,150,240,.6) 40%, transparent 70%)', opacity: win(t, 2.9, 3.7, 0.2, 0.5), transform: `scale(${1 + prog(t, 2.9, 3.7) * 6})` }} />
