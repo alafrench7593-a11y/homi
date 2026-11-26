@@ -29,3 +29,8 @@ input[type="range"] { width: 100%; accent-color: var(--accent); min-height: 44px
 .cond { padding: 18px 22px 18px 38px; display: grid; gap: 10px; }
 @media (max-width: 520px) { .sim-out { grid-template-columns: 1fr; } .nav-links { display: none; } }
 @media (prefers-reduced-motion: reduce) { .sim-bars span { animation: none; } }
+.amb-steps { list-style: none; counter-reset: s; margin: 18px 0 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.amb-steps li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; column-gap: 12px; row-gap: 4px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.amb-steps li::before { content: counter(s); grid-row: span 2; width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--surface); font-weight: 800; }
+.amb-steps span { color: var(--muted); }
+.amb-faq { padding: 18px 22px; margin-top: 12px; } .amb-faq summary { cursor: pointer; font-weight: 700; min-height: 24px; } .amb-faq p { margin: 12px 0 0; color: var(--muted); }
