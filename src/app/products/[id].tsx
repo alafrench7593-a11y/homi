@@ -62,7 +62,7 @@ export default function ProductDetail() {
             </Row>
             {c.criteria.map((x) => (
               <Row key={x.key} style={{ justifyContent: 'space-between', marginTop: 4 }}>
-                <Text variant="small" style={{ flex: 1 }}>{x.ok === null ? '?' : x.ok ? '✓' : '✗'} {tr(`pr.crit.${x.key}` as TKey)}</Text>
+                <Row gap={6} style={{ flex: 1 }}><Icon name={x.ok === null ? 'help-circle' : x.ok ? 'check' : 'x'} size={14} color={x.ok === null ? t.colors.textMuted : x.ok ? t.colors.success : t.colors.danger} /><Text variant="small" style={{ flex: 1 }}>{tr(`pr.crit.${x.key}` as TKey)}</Text></Row>
                 <Text variant="small" muted>{x.points}/{x.max}</Text>
               </Row>
             ))}
