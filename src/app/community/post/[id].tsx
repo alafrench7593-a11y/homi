@@ -16,6 +16,9 @@ import { confirm, Sheet, useToast } from '@/components/Overlays';
 import { Avatar, PostCard, ReportSheet } from '@/features/community';
 import { useCommunityProfile, useForums, usePost } from '@/lib/data/hooks';
 import { useCommentThreads, useCreateComment, useDeleteComment, useUpdateComment } from '@/lib/data/hooks-community';
+import { PENDING } from '@/lib/community/optimistic';
+import { saveDraft, useDraft } from '@/lib/community/drafts';
+import { useUserId } from '@/lib/auth';
 import { friendlyError } from '@/lib/data/hooks-settings';
 import { timeAgo } from '@/lib/domain/dates';
 import type { FeedComment } from '@/lib/types';
@@ -50,6 +53,7 @@ export default function PostScreen() {
   useNoteTopicView(id);
   const groupQ = useGroup(postQ.data?.group_id ?? null);
   const create = useCreateComment(id);
+  const userId = useUserId();
   const del = useDeleteComment();
   const [body, setBody] = useState('');
   const mq = mentionQuery(body);
@@ -75,15 +79,23 @@ export default function PostScreen() {
     } catch (e) { toast(friendlyError(e, tr('cm2.post.editFailed')), 'error'); }
   }
 
+  // Brouillon du commentaire : survit à une erreur réseau, à un retour arrière ou à la fermeture de l'app
+  useDraft(userId, id ? `c:${id}` : null, { body }, (d) => setBody((b) => b || d.body));
+
+  // Envoi instantané : le commentaire apparaît tout de suite (« Envoi… »), le champ se vide ; en cas d'échec, le texte revient
   async function send() {
     if (!body.trim() || create.isPending) return;
+    const text = body; const parent = replyTo;
     Keyboard.dismiss();
+    setBody('');
+    setReplyTo(null);
     try {
-      const c = await create.mutateAsync({ body, parentId: replyTo?.id ?? null });
-      setBody('');
-      setReplyTo(null);
-      toast(c?.status === 'pending_review' ? tr('cm2.post.sentForReview') : replyTo ? tr('cm2.post.replyPublished') : tr('cm2.post.commentPublished'), c?.status === 'pending_review' ? 'info' : 'success');
+      const c = await create.mutateAsync({ body: text, parentId: parent?.id ?? null, me: me ? { pseudonym: me.pseudonym, handle: me.handle, avatar_preset: me.avatar_preset, avatar_path: me.avatar_path } : null });
+      void saveDraft(userId, `c:${id}`, null);
+      toast(c?.status === 'pending_review' ? tr('cm2.post.sentForReview') : parent ? tr('cm2.post.replyPublished') : tr('cm2.post.commentPublished'), c?.status === 'pending_review' ? 'info' : 'success');
     } catch (e) {
+      setBody((b) => b || text);
+      setReplyTo(parent);
       toast(friendlyError(e, tr('cm2.publishFailed')), 'error');
     }
   }
@@ -147,14 +159,14 @@ export default function PostScreen() {
                 <Text variant="small" weight="bold" style={{ flexShrink: 1 }}>{who}{c.is_op && !c.anonymous ? tr('cm2.post.opSuffix') : ''}</Text>
                 {c.author_badge ? <PremiumBadge /> : null}
               </Row>
-              <Text variant="caption" muted>{[c.author_handle ? `@${c.author_handle}` : null, timeAgo(c.created_at), c.edited_at ? tr('cm2.post.editedTag') : null, c.status !== 'visible' ? tr('cm2.post.inReview') : null].filter(Boolean).join(' · ')}</Text>
+              <Text variant="caption" muted>{[c.author_handle ? `@${c.author_handle}` : null, timeAgo(c.created_at), c.edited_at ? tr('cm2.post.editedTag') : null, c.status === PENDING ? tr('cm2.post.sending') : c.status !== 'visible' ? tr('cm2.post.inReview') : null].filter(Boolean).join(' · ')}</Text>
             </View>
           </Row>
           <MentionText text={c.body} style={{ fontSize: 14 }} />
           <Row gap={spacing.md}>
             {me && c.status === 'visible' ? action(tr('cm2.post.reply'), () => { setReplyTo(c); inputRef.current?.focus(); }, true) : null}
-            {c.is_mine ? action(tr('cm2.post.edit'), () => { setEditing(c); setEditBody(c.body); }) : null}
-            {c.is_mine ? action(tr('cm2.post.delete'), () => removeComment(c)) : action(tr('cm2.post.report'), () => setReportComment(c.id))}
+            {c.status === PENDING ? null : c.is_mine ? action(tr('cm2.post.edit'), () => { setEditing(c); setEditBody(c.body); }) : null}
+            {c.status === PENDING ? null : c.is_mine ? action(tr('cm2.post.delete'), () => removeComment(c)) : action(tr('cm2.post.report'), () => setReportComment(c.id))}
           </Row>
         </View>
       </View>

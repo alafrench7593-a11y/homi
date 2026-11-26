@@ -5,7 +5,7 @@
  * du profil garantis côté base), avec les mêmes règles dans le moteur local de démonstration.
  */
 import { t as tr } from '@/i18n';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import { backend, BackendError, eq, inList } from '../backend';
 import { useAuth, useUserId } from '../auth';
@@ -14,6 +14,7 @@ import { useForums, useInvalidate, useProfile, useRows } from './hooks';
 import { forYouOrder, primaryCategories } from '../domain/communityRules';
 import { COMMUNITY_MIME, communityPhotoPath, prepareCommunityPhoto } from '../community/photos';
 import { uuid } from '../uuid';
+import { PENDING, addPendingComment, likePatch, markStale, patchPost, restore, savePatch } from '../community/optimistic';
 
 const FEED_KEYS = ['forum_feed', 'comment_feed'];
 export const COMMUNITY_BUCKET = 'community';
@@ -274,12 +275,21 @@ export function useDeletePost() {
 
 /** Commentaire, ou réponse à un commentaire (parentId). */
 export function useCreateComment(postId: string) {
+  const qc = useQueryClient();
   const inv = useInvalidate();
   return useMutation({
-    mutationFn: async (c: { body: string; parentId?: string | null }) => {
+    mutationFn: async (c: { body: string; parentId?: string | null; me?: { pseudonym?: string | null; handle?: string | null; avatar_preset?: string | null; avatar_path?: string | null } | null }) => {
       const [row] = await backend.insert<{ id: string; status: string; parent_id: string | null }>('comments', { post_id: postId, parent_id: c.parentId ?? null, body: c.body.trim() }, { returning: 'id,status,parent_id' });
       return row;
     },
+    // Affiché tout de suite, marqué « Envoi… » jusqu'à la confirmation du serveur
+    onMutate: async (c) => {
+      await qc.cancelQueries({ predicate: (q) => q.queryKey.includes('comment_feed') });
+      const temp: FeedComment = { id: `tmp-${Date.now()}`, post_id: postId, parent_id: c.parentId ?? null, body: c.body.trim(), status: PENDING, created_at: new Date().toISOString(),
+        pseudonym: c.me?.pseudonym ?? null, author_handle: c.me?.handle ?? null, avatar_preset: c.me?.avatar_preset ?? null, avatar_path: c.me?.avatar_path ?? null, is_mine: true };
+      return { snap: addPendingComment(qc, temp) };
+    },
+    onError: (_e, _c, ctx) => restore(qc, ctx?.snap),
     onSuccess: () => inv(...FEED_KEYS, 'notifications', 'community_profiles'),
   });
 }
@@ -296,7 +306,7 @@ export function useUpdateComment() {
 }
 
 export function useToggleSave() {
-  const inv = useInvalidate();
+  const qc = useQueryClient();
   const userId = useUserId();
   return useMutation({
     mutationFn: async (post: Pick<FeedPost, 'id' | 'saved'>) => {
@@ -304,19 +314,24 @@ export function useToggleSave() {
       else await backend.insert('saved_posts', { post_id: post.id, user_id: userId }, { onConflict: 'post_id,user_id', ignoreDuplicates: true });
       return !post.saved;
     },
-    onSuccess: () => inv('forum_feed', 'community_profiles'),
+    onMutate: (post) => ({ snap: patchPost(qc, post.id, savePatch(!post.saved)) }),
+    onError: (_e, _p, ctx) => restore(qc, ctx?.snap),
+    onSettled: () => markStale(qc, 'forum_feed', 'community_profiles'),
   });
 }
 
+/** Cœur instantané : le compteur et l'icône changent avant la réponse du serveur ; annulé proprement en cas d'échec. */
 export function useToggleLike() {
-  const inv = useInvalidate();
+  const qc = useQueryClient();
   const userId = useUserId();
   return useMutation({
     mutationFn: async (post: Pick<FeedPost, 'id' | 'liked'>) => {
       if (post.liked) await backend.remove('post_likes', [eq('post_id', post.id), eq('user_id', userId)]);
       else await backend.insert('post_likes', { post_id: post.id, user_id: userId });
     },
-    onSuccess: () => inv('forum_feed', 'community_profiles'),
+    onMutate: (post) => ({ snap: patchPost(qc, post.id, likePatch(!post.liked)) }),
+    onError: (_e, _p, ctx) => restore(qc, ctx?.snap),
+    onSettled: () => markStale(qc, 'forum_feed', 'community_profiles'),
   });
 }
 
