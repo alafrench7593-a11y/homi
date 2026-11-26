@@ -31,10 +31,41 @@
         <nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a> <span aria-hidden="true">›</span> <span>Aura</span></nav>
         <p class="eyebrow">L’assistante de HOMI</p>
         <h1 id="t-aura" class="display lines"><span class="line"><span>Écrivez comme vous parlez.</span></span> <span class="line line-soft"><span>Aura trouve le bon outil.</span></span></h1>
-        <p class="lead">« Il dort mal depuis trois nuits », « rappelle-moi le vaccin » : Aura comprend la demande, ouvre l’outil adapté et prépare ce qui peut l’être. Rien n’est enregistré sans votre confirmation.</p>
+        <p class="lead">« Il dort mal depuis trois nuits », « rappelle-moi le vaccin » : Aura comprend la demande, ouvre l’outil adapté et prépare ce qui peut l’être. Rien n’est enregistré sans votre confirmation.</p>
         <p class="fine">Aura est une intelligence artificielle. Elle n’est pas une professionnelle de santé, ne pose aucun diagnostic et ne calcule jamais de dose de médicament.</p>
       </div>
       <img class="aura-shot" src="/site/screens/aura.webp" alt="Écran d’Aura dans l’application HOMI : une question et l’outil proposé" width="390" height="810" loading="eager" decoding="async">
+    </div>
+  </section>
+
+  <section class="chapter tight" aria-labelledby="t-demo">
+    <div class="wrap">
+      <h2 id="t-demo" class="h2">Une phrase. Les bons outils, à jour.</h2>
+      <p class="fine">Choisissez une phrase : Aura comprend, vous validez, chaque outil concerné se met à jour et l’autre parent le voit.</p>
+      <div class="sync-grid" data-sync data-scenarios='[{"say": "Il vient de boire 150 ml", "t": "Biberon de 150 ml à 15 h 40.", "s": "À enregistrer pour Léa ?", "ok": "Validé, enregistré ✓", "n": [["Biberons", "+ 150 ml à 15 h 40"], ["Statistiques", "Total du jour : 600 ml"], ["Relais", "Ajouté au résumé pour Julien"]]}, {"say": "Il dort depuis 14 h 20", "t": "Sieste commencée à 14 h 20.", "s": "Je lance le minuteur ?", "ok": "Validé, minuteur lancé ✓", "n": [["Sommeil", "Sieste en cours depuis 14 h 20"], ["Planning", "Prochain repas recalculé"], ["Coparent", "Julien voit la sieste en cours"]]}, {"say": "Biberon de 120 ml et couche mouillée", "t": "Deux actions comprises.", "s": "Biberon 120 ml et couche mouillée, à 16 h 05 ?", "ok": "Validé, deux entrées ✓", "n": [["Biberons", "+ 120 ml à 16 h 05"], ["Couches", "Mouillée à 16 h 05"], ["Journée", "Le fil de la journée est à jour"]]}, {"say": "Rendez-vous pédiatre jeudi à 10 h", "t": "Rendez-vous jeudi à 10 h 00.", "s": "Je l’ajoute à l’agenda familial ?", "ok": "Validé, ajouté ✓", "n": [["Agenda familial", "Jeudi 10 h : pédiatre"], ["Rendez-vous", "Prêt pour vos questions"], ["Foyer", "Visible par Julien"]]}, {"say": "Prépare le relais de ce soir", "t": "Résumé de la journée prêt.", "s": "Siestes, repas, couches : vous le relisez avant l’envoi ?", "ok": "Relu et envoyé ✓", "n": [["Journée", "Repas, siestes et couches rassemblés"], ["Relais", "Brouillon relu par vous"], ["Julien", "Reçoit le relais de 18 h"]]}, {"say": "Julien s’occupe des courses", "t": "Mission « Courses » pour Julien.", "s": "Je la lui confie ?", "ok": "Validé, mission confiée ✓", "n": [["Tâches", "Courses attribuées à Julien"], ["Liste de courses", "Partagée avec Julien"], ["Julien", "Prévenu de sa mission"]]}, {"say": "Ajoute cette photo à son histoire", "t": "Photo du 12 mai, chapitre « Premiers mois ».", "s": "Je propose un court texte, vous le relisez ?", "ok": "Relu et validé ✓", "n": [["Album photo", "Photo rangée au 12 mai"], ["Aura", "Texte proposé, à relire"], ["Mon histoire", "Nouvelle page après validation"]]}]'>
+        <div class="card sync-chat">
+          <p class="sync-label"><span class="pill">Démonstration</span> Scénarios préenregistrés, aucune IA appelée.</p>
+          <div class="sync-tabs" role="group" aria-label="Choisir une phrase">
+            <button type="button" aria-pressed="true" data-scn="0">« Il vient de boire 150 ml »</button>
+            <button type="button" aria-pressed="false" data-scn="1">« Il dort depuis 14 h 20 »</button>
+            <button type="button" aria-pressed="false" data-scn="2">« Biberon de 120 ml et couche mouillée »</button>
+            <button type="button" aria-pressed="false" data-scn="3">« Rendez-vous pédiatre jeudi à 10 h »</button>
+            <button type="button" aria-pressed="false" data-scn="4">« Prépare le relais de ce soir »</button>
+            <button type="button" aria-pressed="false" data-scn="5">« Julien s’occupe des courses »</button>
+            <button type="button" aria-pressed="false" data-scn="6">« Ajoute cette photo à son histoire »</button>
+          </div>
+          <div class="sync-thread" aria-live="polite">
+            <p class="bubble me" data-say>Il vient de boire 150 ml</p>
+            <div class="bubble aura" data-reply><b data-reply-t>Biberon de 150 ml à 15 h 40.</b><span data-reply-s>À enregistrer pour Léa ?</span><span class="sync-ok" data-ok>Validé, enregistré ✓</span></div>
+          </div>
+        </div>
+        <ol class="sync-flow" aria-label="Outils mis à jour">
+          <li class="card sync-node" data-node="0"><b data-n-t>Biberons</b><span data-n-s>+ 150 ml à 15 h 40</span></li>
+          <li class="card sync-node" data-node="1"><b data-n-t>Statistiques</b><span data-n-s>Total du jour : 600 ml</span></li>
+          <li class="card sync-node" data-node="2"><b data-n-t>Relais</b><span data-n-s>Ajouté au résumé pour Julien</span></li>
+        </ol>
+      </div>
+      <p class="fine">Dans l’application, les actions simples (biberon, sieste, couche, tétée, rendez-vous, tâche, relais…) sont reconnues directement sur le téléphone, sans IA. Rien n’est enregistré sans votre validation.</p>
     </div>
   </section>
 
@@ -45,6 +76,7 @@
         <article class="card aura-item"><h3>Retrouver le bon outil</h3><p>Elle cherche parmi les outils réels de HOMI (sommeil, biberons, croissance, agenda, tâches…) et vous propose de l’ouvrir.</p></article>
         <article class="card aura-item"><h3>Préparer, pas décider</h3><p>Un rendez-vous, une tâche ou un petit plan en quelques étapes : Aura prépare une proposition, vous la validez ou la modifiez.</p></article>
         <article class="card aura-item"><h3>Résumer ce que vous choisissez</h3><p>Vous cochez vous-même les entrées de journal à partager, pour cette demande seulement. Rien n’est coché d’avance.</p></article>
+        <article class="card aura-item"><h3>Ranger un document</h3><p>Depuis la conversation, joignez une photo, un PDF (compte rendu, ordonnance) ou un code-barres : la lecture vous est montrée et rien n’est enregistré sans votre confirmation. Aura ne donne jamais de posologie.</p></article>
         <article class="card aura-item"><h3>Reformuler un message</h3><p>Dire les choses plus calmement à un coparent ou à un proche, avec vos mots, sans jugement.</p></article>
       </div>
     </div>

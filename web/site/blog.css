@@ -13,3 +13,11 @@
 .post-src ul { padding-left: 1.2em; margin: 0; } .post-src li { font-size: .9375rem; margin: 4px 0; overflow-wrap: anywhere; }
 .post-note { font-size: .875rem; color: var(--muted); margin-top: 16px; }
 .post-more { margin-top: 40px; }
+.post-toc { margin: 24px 0 8px; padding: 16px 20px; border-left: 2px solid var(--ink); }
+.post-toc p { margin: 0 0 6px; font-weight: 700; }
+.post-toc ol { margin: 0; padding-left: 1.2em; } .post-toc li { margin: 0; } .post-toc a { color: var(--ink); display: inline-flex; align-items: center; min-height: 44px; }
+.post-tool { margin-top: 32px; padding: 20px 22px; } .post-tool p { margin: 0 0 10px; } .post-tool .eyebrow { margin-bottom: 4px; }
+.blog-search { display: block; margin-top: 24px; max-width: 560px; }
+.blog-search input { width: 100%; min-height: 50px; padding: 0 18px; border-radius: 14px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 1rem; }
+.blog-toc { margin-top: 16px; display: flex; flex-wrap: wrap; gap: 8px; }
+.post-body h2 { scroll-margin-top: 100px; }

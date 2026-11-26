@@ -19,3 +19,12 @@ Limite : web uniquement ; FPS, mémoire et sensation des gestes sur iPhone réel
 Résultat : 33/33 écrans sans constat bloquant ; accessibilité B : tout vert sauf le faux positif ci-dessus.
 Code (règles animate-expo) : `Mon histoire` refaisait l'illustration à chaque image de défilement → progression arrondie (1/20 de chapitre).
 Restant connu : 37 fichiers utilisent encore l'API `Animated` de base (pilote natif), à migrer vers Reanimated au fil des écrans touchés ; la feuille `tray` anime sa hauteur.
+
+## 26/11/2026 — site web : pages « univers » (15) et Tarifs
+Porte de fin (version site) : rendu inspecté à 320 × 568, 390 × 844, 1280 et 1440 px ; aucun débordement, un seul H1, aucune erreur JS ; e2e menu 20/20.
+Anti-slop : outils listés = libellés et descriptions réels du catalogue (aucun outil inventé, build en échec sinon) ; liste à filets plutôt que cartes répétées ; aucun témoignage ni chiffre inventé ; captures réelles « famille fictive ».
+Corrigé : liens « Autres univers » 43 px → 46 px (cible ≥ 44). Non vérifié : mode sombre du site (le site n'a pas de thème sombre complet), texte agrandi ×1,3 navigateur.
+
+## 26/11/2026 — site : démo Aura (7 scénarios)
+Scénarios limités aux actions reconnues par le code (`AURA_INTENT_KINDS` : log_bottle, start_sleep, multi, add_appointment, prepare_relay, assign_task, open_story) ; marqués « Démonstration, aucune IA appelée ».
+Corrigé pendant la porte de fin : 7 boutons empilés + « » » orphelin sur mobile → rangée défilante horizontale, guillemets insécables ; débordement horizontal de 1 500 px (grille sans min-width) → `min-width: 0`. 320/390/1366 : 0 débordement, 0 erreur JS.

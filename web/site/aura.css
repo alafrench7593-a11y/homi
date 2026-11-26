@@ -21,3 +21,9 @@
 .plan-eq { margin: 8px 0 0; color: var(--muted); font-size: .9375rem; }
 .plan-best { outline: 2px solid var(--ink); outline-offset: -2px; }
 .plan-badge { margin: 0 0 10px; display: inline-block; padding: 4px 10px; border-radius: 999px; background: var(--ink); color: var(--surface); font-size: .8125rem; font-weight: 700; }
+.u-answer { margin: 14px 0 0; font-size: 1.0625rem; max-width: 46ch; font-weight: 600; }
+.u-tools { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; border-top: 1px solid var(--line); }
+.u-tools li { display: grid; gap: 4px; padding: 16px 2px; border-bottom: 1px solid var(--line); }
+.u-tools span { color: var(--muted); font-size: .9375rem; }
+.u-others { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; }
+.u-others a { display: inline-flex; min-height: 46px; align-items: center; color: var(--ink); font-weight: 600; }

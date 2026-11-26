@@ -163,6 +163,7 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
   cpSync(path.join(site, 'aura.css'), path.join(dist, 'site', 'aura.css'));
   const { stages: st, tools: all } = globalThis.homiTools.all();
   const { HUBS: hubsForLlms } = await import(path.join(site, 'hubs.mjs'));
+  const { UNIVERS: univForLlms } = await import(path.join(site, 'univers.mjs'));
   const auraFaq = [...readFileSync(path.join(site, 'aura.html'), 'utf8').matchAll(/<summary>([^<]+)<\/summary><p>([^<]+)<\/p>/g)].map(([, q, a]) => [q, a]);
   const byCat = new Map(); for (const t of all) { if (!byCat.has(t.categoryTitle)) byCat.set(t.categoryTitle, []); byCat.get(t.categoryTitle).push(t); }
   writeFileSync(path.join(dist, 'llms.txt'), `# HOMI
@@ -177,6 +178,7 @@ for (const n of ['projet-bebe', 'grossesse', 'bebe', 'enfants', 'famille', 'foye
 ## Pages
 - [Présentation](${siteUrl}/): ce qu'est HOMI et à qui il s'adresse
 ${hubsForLlms.map((h) => `- [${h.name}](${siteUrl}/${h.slug}): ${h.desc}`).join('\n')}
+${univForLlms.map((x) => `- [${x.kw}](${siteUrl}/${x.slug}): ${x.answer}`).join('\n')}
 - [Blog](${siteUrl}/blog): articles pratiques non médicaux (démarches, garde, matériel, éveil, éducation), sources officielles citées
 - [Aura, l'assistante](${siteUrl}/aura): retrouve le bon outil, prépare rendez-vous et tâches à confirmer ; pas une professionnelle de santé, aucune dose
 - [Toutes les fonctionnalités](${siteUrl}/fonctionnalites): les ${all.length} outils réels, par étape de vie
@@ -187,7 +189,7 @@ ${hubsForLlms.map((h) => `- [${h.name}](${siteUrl}/${h.slug}): ${h.desc}`).join(
 - [Confidentialité](${siteUrl}/confidentialite)
 
 ## Questions fréquentes
-${[...hubsForLlms.flatMap((h) => h.faq), ...auraFaq].map(([q, a]) => `- **${q}** ${a}`).join('\n')}
+${[...hubsForLlms.flatMap((h) => h.faq), ...univForLlms.flatMap((x) => x.faq), ...auraFaq].map(([q, a]) => `- **${q}** ${a}`).join('\n')}
 
 ## Étapes de vie
 ${st.map((x) => `- ${x.title}`).join('\n')}
@@ -226,6 +228,34 @@ const hubPaths = [];
     writeFileSync(path.join(dist, h.slug, 'index.html'), html);
     hubPaths.push(`/${h.slug}`);
   }
+  // pages « univers » : problème réel → réponse HOMI → outils réels du catalogue (aucun outil inventé)
+  const { UNIVERS } = await import(path.join(site, 'univers.mjs'));
+  const byId = new Map(globalThis.homiTools.all().tools.map((t) => [t.id, t]));
+  for (const u of UNIVERS) {
+    const tools = u.tools.map((id) => { const t = byId.get(id); if (!t) throw new Error(`univers ${u.slug} : outil inconnu ${id}`); return t; });
+    const url = `${siteUrl}/${u.slug}`;
+    const jsonld = { '@context': 'https://schema.org', '@graph': [
+      { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${siteUrl}/` }, { '@type': 'ListItem', position: 2, name: 'Fonctionnalités', item: `${siteUrl}/fonctionnalites` }, { '@type': 'ListItem', position: 3, name: u.name, item: url }] },
+      { '@type': 'WebPage', name: u.kw, url, description: u.answer, isPartOf: { '@type': 'WebSite', name: 'HOMI', url: `${siteUrl}/` } },
+      { '@type': 'ItemList', name: `Outils HOMI : ${u.name}`, itemListElement: tools.map((t, i) => ({ '@type': 'ListItem', position: i + 1, name: t.label, description: t.sub })) },
+      { '@type': 'FAQPage', mainEntity: u.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+    ] };
+    const others = UNIVERS.filter((o) => o.slug !== u.slug);
+    const content = `<section class="chapter" aria-labelledby="t-u"><div class="wrap aura-hero"><div>`
+      + `<nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a> <span aria-hidden="true">›</span> <a href="/fonctionnalites">Fonctionnalités</a> <span aria-hidden="true">›</span> <span>${esc(u.name)}</span></nav>`
+      + `<h1 id="t-u" class="display">${esc(u.kw)}</h1><p class="lead u-problem">${esc(u.problem)}</p><p class="u-answer">${esc(u.answer)}</p>`
+      + `<div class="cta-row"><a class="btn btn-primary btn-lg" href="/telecharger">Télécharger HOMI</a><a class="btn btn-secondary btn-lg" href="/tarifs">Voir les tarifs</a></div></div>`
+      + `<img class="aura-shot" src="/site/screens/${u.shot}.webp" alt="Écran réel de l’application HOMI (famille fictive)" width="390" height="810" loading="eager" decoding="async"></div></section>`
+      + `<section class="chapter tight" aria-labelledby="t-tools"><div class="wrap narrow"><h2 id="t-tools" class="h2">Les outils HOMI pour ${esc(u.name.toLowerCase())}</h2><ul class="u-tools">${tools.map((t) => `<li><strong>${esc(t.label)}</strong><span>${esc(t.sub)}</span></li>`).join('')}</ul>`
+      + `<p class="fine">Les outils sont décrits tels qu’ils apparaissent dans l’application. HOMI ne remplace pas un professionnel de santé.</p></div></section>`
+      + `<section class="chapter tight" aria-labelledby="t-faq"><div class="wrap narrow"><h2 id="t-faq" class="h2">Questions fréquentes</h2>${u.faq.map(([q, a]) => `<details class="card aura-faq" open><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div></section>`
+      + `<nav class="chapter tight" aria-label="Autres univers"><div class="wrap"><h2 class="h2">Autres univers</h2><ul class="u-others">${others.map((o) => `<li><a href="/${o.slug}">${esc(o.name)}</a></li>`).join('')}</ul></div></nav>`;
+    const html = tpl.replace('{{TITLE}}', () => esc(`${u.kw} | HOMI`)).replaceAll('{{DESC}}', () => esc(`${u.problem} ${u.answer}`.slice(0, 300))).replaceAll('{{NAME}}', () => esc(u.name)).replaceAll('{{CANONICAL}}', url)
+      .replace('{{JSONLD}}', () => JSON.stringify(jsonld).replace(/</g, '\\u003c')).replace('{{CONTENT}}', () => content);
+    mkdirSync(path.join(dist, u.slug), { recursive: true });
+    writeFileSync(path.join(dist, u.slug, 'index.html'), html);
+    hubPaths.push(`/${u.slug}`);
+  }
   console.log(`pages piliers : ${hubPaths.join(', ')}`);
 }
 
@@ -238,6 +268,8 @@ const blogPaths = [];
   createRequire(import.meta.url)(out);
   const { categories, articles } = globalThis.homiBlog;
   const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const slugify = (t) => String(t).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const TOOL_FOR = { 'droits-demarches': ['application-organisation-familiale', 'Papiers, rendez-vous et échéances de la famille'], 'ecole-garde': ['application-garde-nounou-creche', 'Carnet de liaison nounou, fiche à transmettre, école'], 'materiel': ['scanner-produits-bebe', 'Scanner de produits et alertes de rappel'], 'vie-pratique': ['application-organisation-familiale', 'Agenda, tâches et courses partagés'], 'activites-eveil': ['application-suivi-bebe', 'Étapes du développement et journée de bébé'], 'education': ['application-organisation-familiale', 'Routines du foyer et missions familiales'] };
   const inline = (t) => esc(t).replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
   const md = (src) => {
     const html = []; let list = null; let para = [];
@@ -245,7 +277,7 @@ const blogPaths = [];
     for (const raw of src.split('\n')) {
       const line = raw.trim(); let mm;
       if (!line) { flush(); continue; }
-      if ((mm = line.match(/^(#{2,3}) (.*)/))) { flush(); html.push(`<h${mm[1].length}>${inline(mm[2])}</h${mm[1].length}>`); continue; }
+      if ((mm = line.match(/^(#{2,3}) (.*)/))) { flush(); const id = mm[1].length === 2 ? ` id="${slugify(mm[2])}"` : ''; html.push(`<h${mm[1].length}${id}>${inline(mm[2])}</h${mm[1].length}>`); continue; }
       if ((mm = line.match(/^(-|\d+\.) (.*)/))) { const t = mm[1] === '-' ? 'ul' : 'ol'; if (para.length) { html.push(`<p>${inline(para.join(' '))}</p>`); para = []; } if (list !== t) { if (list) html.push(`</${list}>`); html.push(`<${t}>`); list = t; } html.push(`<li>${inline(mm[2])}</li>`); continue; }
       if (list) { html.push(`</${list}>`); list = null; }
       para.push(line.replace(/^> /, ''));
@@ -264,6 +296,7 @@ const blogPaths = [];
     desc: `${articles.length} articles pratiques pour les parents : congés et démarches, modes de garde, matériel, activités d’éveil, éducation, organisation du foyer. Sources officielles citées.`,
     jsonld: { '@context': 'https://schema.org', '@graph': [crumbs([['Accueil', '/'], ['Blog', '/blog']]), { '@type': 'CollectionPage', name: 'Blog HOMI', url: `${siteUrl}/blog` }] },
     content: `<section class="wrap blog-head">${nav([['Accueil', '/'], ['Blog', '/blog']])}<p class="eyebrow">Blog</p><h1 class="display">Les réponses pratiques<br>de la vie de famille.</h1><p class="lead">Démarches, garde, matériel, éveil : ${articles.length} articles avec leurs sources officielles.</p>`
+      + `<label class="blog-search"><span class="sr-only">Rechercher un article</span><input type="search" placeholder="Rechercher un article (ex. congé, crèche, poussette)" data-blog-search autocomplete="off"></label><p class="fine" data-blog-count hidden></p>`
       + `<nav class="blog-toc" aria-label="Rubriques">${byCat.map(([c]) => `<a class="btn btn-secondary btn-sm" href="#${c}">${esc(categories[c])}</a>`).join(' ')}</nav></section>`
       + `<div class="wrap">${byCat.map(([c, l]) => `<section class="blog-cat" id="${c}"><h2>${esc(categories[c])}</h2><ul class="blog-list">${l.map(card).join('')}</ul></section>`).join('')}</div>` }));
   blogPaths.push('/blog');
@@ -276,7 +309,9 @@ const blogPaths = [];
         { '@type': 'Article', headline: a.title, description: a.summary, inLanguage: 'fr', dateModified: consulted, url: `${siteUrl}/blog/${a.slug}`,
           author: { '@type': 'Organization', name: 'HOMI' }, publisher: { '@type': 'Organization', name: 'HOMI', url: `${siteUrl}/` }, citation: a.sources.map((s) => s.url) }] },
       content: `<article class="wrap narrow post">${nav([['Accueil', '/'], ['Blog', '/blog'], [categories[c], `/blog#${c}`]])}<h1>${esc(a.title)}</h1><p class="summary">${esc(a.summary)}</p>`
+        + (() => { const hs = [...a.body_md.matchAll(/^## (.+)$/gm)].map((m) => m[1]); return hs.length > 2 ? `<nav class="post-toc" aria-label="Sommaire"><p>Sommaire</p><ol>${hs.map((h) => `<li><a href="#${slugify(h)}">${esc(h.replace(/\*\*/g, ''))}</a></li>`).join('')}</ol></nav>` : ''; })()
         + `<div class="post-body">${md(a.body_md)}</div>`
+        + (TOOL_FOR[c] ? `<aside class="card post-tool"><p class="eyebrow">Dans HOMI</p><p><strong>${esc(TOOL_FOR[c][1])}</strong></p><a class="btn btn-primary btn-sm" href="/${TOOL_FOR[c][0]}">Découvrir l’outil</a></aside>` : '')
         + `<aside class="card post-src"><h2>Sources</h2><ul>${a.sources.map((s) => `<li><a href="${esc(s.url)}" rel="noopener" target="_blank">${esc(s.label)}</a> — consultée le ${esc(s.consulted_on.split('-').reverse().join('/'))}</li>`).join('')}</ul>`
         + `<p class="post-note">Rédaction assistée par une IA (Claude, Anthropic) à partir des sources citées. Règles et montants évoluent : vérifiez toujours auprès de la source officielle.</p></aside>`
         + `<nav class="post-more" aria-label="À lire aussi"><h2>À lire aussi</h2><ul class="blog-list">${more.map(card).join('')}</ul></nav></article>` }));

@@ -252,8 +252,9 @@
   var S = [
     { say: 'Il vient de boire 150 ml', t: 'Biberon de 150 ml à 15 h 40.', s: 'À enregistrer pour Léa ?', ok: 'Validé, enregistré ✓', n: [['Biberons', '+ 150 ml à 15 h 40'], ['Statistiques', 'Total du jour : 600 ml'], ['Relais', 'Ajouté au résumé pour Julien']] },
     { say: 'Il dort depuis 14 h 20', t: 'Sieste commencée à 14 h 20.', s: 'Je lance le minuteur ?', ok: 'Validé, minuteur lancé ✓', n: [['Sommeil', 'Sieste en cours depuis 14 h 20'], ['Planning', 'Prochain biberon recalculé'], ['Coparent', 'Julien voit la sieste en cours']] },
-    { say: 'Ajoute cette photo à son histoire', t: 'Photo du 12 mai, chapitre « Premiers mois ».', s: 'Je propose un court texte, vous le relisez ?', ok: 'Relu et validé ✓', n: [['Album photo', 'Photo rangée au 12 mai'], ['Aura', 'Texte proposé, à relire'], ['Mon histoire', 'Nouvelle page après validation']] },
+    { say: 'Ajoute cette photo à son histoire', t: 'Photo du 12 mai, chapitre « Premiers mois ».', s: 'Je propose un court texte, vous le relisez ?', ok: 'Relu et validé ✓', n: [['Album photo', 'Photo rangée au 12 mai'], ['Aura', 'Texte proposé, à relire'], ['Mon histoire', 'Nouvelle page après validation']] },
   ];
+  try { if (root.dataset.scenarios) S = JSON.parse(root.dataset.scenarios); } catch (e) { /* scénarios par défaut */ }
   var tabs = root.querySelectorAll('[data-scn]'), nodes = root.querySelectorAll('[data-node]'), timers = [];
   function q(sel) { return root.querySelector(sel); }
   function later(fn, ms) { timers.push(setTimeout(fn, reduce ? 0 : ms)); }
@@ -273,4 +274,19 @@
   if (reduce || !('IntersectionObserver' in window)) { play(0); return; }
   var seen = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { seen.disconnect(); play(0); } }, { threshold: 0.35 });
   seen.observe(root);
+})();
+
+/* Blog : recherche instantanée dans l'index (le contenu reste dans le HTML, sans JS tout est visible) */
+(function () {
+  var input = document.querySelector('[data-blog-search]'); if (!input) return;
+  var items = Array.prototype.slice.call(document.querySelectorAll('.blog-list li'));
+  var count = document.querySelector('[data-blog-count]');
+  var norm = function (t) { return t.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); };
+  var texts = items.map(function (li) { return norm(li.textContent); });
+  input.addEventListener('input', function () {
+    var q = norm(input.value.trim()), n = 0;
+    items.forEach(function (li, i) { var on = !q || q.split(/\s+/).every(function (w) { return texts[i].indexOf(w) >= 0; }); li.hidden = !on; if (on) n++; });
+    document.querySelectorAll('.blog-cat').forEach(function (s) { s.hidden = !s.querySelector('li:not([hidden])'); });
+    if (count) { count.hidden = !q; count.textContent = n ? n + ' article' + (n > 1 ? 's' : '') : 'Aucun article : essayez un autre mot.'; }
+  });
 })();
