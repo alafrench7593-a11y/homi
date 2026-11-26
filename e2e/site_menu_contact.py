@@ -14,15 +14,16 @@ with sync_playwright() as p:
     pg.on('pageerror', lambda e: errs.append(str(e)[:150]))
     for page in ['/', '/fonctionnalites/', '/ambassadeurs/', '/contact/']:
         pg.goto(B + page); pg.wait_for_timeout(800)
-        check(f'menu commun présent sur {page}', pg.locator('details.mm').count() == 6 and pg.locator('.foot-cols').count() == 1)
+        check(f'menu commun présent sur {page}', pg.locator('details.mm').count() == 3 and pg.locator('.mm-link').count() == 3 and pg.locator('.foot-cols').count() == 1)
     pg.goto(B + '/'); pg.wait_for_timeout(800)
     hrefs = sorted(set(pg.eval_on_selector_all('.nav a[href^="/"], .footer a[href^="/"]', 'els => els.map(e => e.getAttribute("href"))')))
-    bad = [h for h in hrefs if status(urllib.parse.quote(h.split('#')[0], safe='/')) != 200]
+    app = ('/app', '/auth/', '/ambassadors/')  # routes de l'app : réécriture Vercel, absente du serveur statique local
+    bad = [h for h in hrefs if not ('127.0.0.1' in B and h.startswith(app)) and status(urllib.parse.quote(h.split('#')[0], safe='/')) != 200]
     check(f'menu + pied de page : {len(hrefs)} liens, tous répondent', not bad, ', '.join(bad))
-    pg.click('details.mm:nth-of-type(1) >> summary', timeout=3000) if False else pg.locator('details.mm summary', has_text='Grossesse').click(); pg.wait_for_timeout(300)
+    pg.click('details.mm:nth-of-type(1) >> summary', timeout=3000) if False else pg.locator('details.mm summary', has_text='Grossesse & Bébé').click(); pg.wait_for_timeout(300)
     check('desktop : panneau Grossesse ouvert', pg.locator('details.mm[open] .mm-panel').is_visible())
     pg.screenshot(path=f'{SHOTS}/menu-desktop.png')
-    pg.locator('details.mm[open] a', has_text='Grossesse').first.click(); pg.wait_for_timeout(1500)
+    pg.locator('details.mm[open] a[href="/fonctionnalites#etape=pregnancy"]').click(); pg.wait_for_timeout(1500)
     vis = pg.locator('.feat-item:not([hidden])').count()
     check('lien #etape=pregnancy → catalogue filtré', '/fonctionnalites' in pg.url and 0 < vis < 121 and pg.locator('.feat-chips button[data-stage="pregnancy"][aria-pressed="true"]').count() == 1, f'{vis} outils')
     pg.goto(B + '/fonctionnalites/#etape=baby&q=sommeil'); pg.wait_for_timeout(1500)
@@ -35,9 +36,9 @@ with sync_playwright() as p:
     check('mobile : liens masqués, bouton menu visible', m.locator('.mm-burger').is_visible() and not m.locator('.mm-list').is_visible())
     m.click('.mm-burger'); m.wait_for_timeout(300)
     check('mobile : menu ouvert', m.locator('.mm-list').is_visible() and m.get_attribute('.mm-burger', 'aria-expanded') == 'true')
-    m.locator('details.mm summary', has_text='Bébé et enfant').click(); m.wait_for_timeout(300)
+    m.locator('details.mm summary', has_text='Grossesse & Bébé').click(); m.wait_for_timeout(300)
     m.screenshot(path=f'{SHOTS}/menu-mobile.png')
-    check('mobile : sous-catégories dépliées', m.locator('details.mm[open] a', has_text='Biberons').is_visible())
+    check('mobile : sous-catégories dépliées', m.locator('details.mm[open] a', has_text='Biberons et allaitement').is_visible())
     check('mobile : pas de débordement menu ouvert', m.evaluate('document.documentElement.scrollWidth <= innerWidth + 1'))
     m.keyboard.press('Escape'); m.wait_for_timeout(200)
     check('mobile : Échap ferme le menu', not m.locator('.mm-list').is_visible())

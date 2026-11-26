@@ -25,7 +25,8 @@ if (!existsSync(path.join(dist, 'index.html')) && !existsSync(path.join(dist, 'a
 const env = process.env;
 const production = env.VERCEL_ENV === 'production';
 // Adresse officielle : homifamille.com (domaine acheté le 24/11/2026) ; SITE_URL la remplace si besoin
-const OFFICIAL = 'https://homifamille.com';
+// www est l'hôte réellement servi (l'apex redirige vers www) : la canonique doit être l'URL finale, sans redirection
+const OFFICIAL = 'https://www.homifamille.com';
 const siteUrl = (env.SITE_URL
   || (production ? OFFICIAL : '')
   || (env.VERCEL_URL ? `https://${env.VERCEL_URL}` : 'http://localhost:8080')).replace(/\/$/, '');
@@ -190,6 +191,37 @@ ${[...byCat.entries()].map(([c, l]) => `### ${c}\n${l.map((t) => `- ${t.label} :
 `);
 }
 
+// 3 sexies) pages piliers (cibles des liens annexes Google) : contenu statique, FAQ et fil d'Ariane balisés
+const hubPaths = [];
+{
+  const { HUBS } = await import(path.join(site, 'hubs.mjs'));
+  const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const tpl = withChrome(readFileSync(path.join(site, 'hub.html'), 'utf8')).replaceAll('{{ROBOTS}}', robotsPublic).replaceAll('{{VERSION}}', version).replaceAll('{{SITE_URL}}', siteUrl);
+  for (const h of HUBS) {
+    const url = `${siteUrl}/${h.slug}`;
+    const others = HUBS.filter((o) => o.slug !== h.slug);
+    const jsonld = { '@context': 'https://schema.org', '@graph': [
+      { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${siteUrl}/` }, { '@type': 'ListItem', position: 2, name: h.name, item: url }] },
+      { '@type': 'WebPage', name: h.name, url, description: h.desc, isPartOf: { '@type': 'WebSite', name: 'HOMI', url: `${siteUrl}/` } },
+      { '@type': 'FAQPage', mainEntity: h.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+    ] };
+    const content = `<section class="chapter" aria-labelledby="t-hub"><div class="wrap aura-hero"><div>`
+      + `<nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a> <span aria-hidden="true">›</span> <span>${esc(h.name)}</span></nav>`
+      + `<p class="eyebrow">${esc(h.eyebrow)}</p><h1 id="t-hub" class="display lines"><span class="line"><span>${esc(h.h1[0])}</span></span> <span class="line line-soft"><span>${esc(h.h1[1])}</span></span></h1>`
+      + `<p class="lead">${esc(h.lead)}</p><div class="cta-row">${h.cta.map(([l, u], i) => `<a class="btn ${i ? 'btn-secondary' : 'btn-primary'} btn-lg" href="${u}">${esc(l)}</a>`).join('')}</div></div>`
+      + `<img class="aura-shot" src="/site/screens/${h.shot}.webp" alt="Écran réel de l’application HOMI : ${esc(h.name)}" width="390" height="810" loading="eager" decoding="async"></div></section>`
+      + `<section class="chapter tight"><div class="wrap"><div class="aura-grid">${h.sections.map(([t, l]) => `<article class="card aura-item"><h2 class="h3">${esc(t)}</h2><ul class="aura-list">${l.map((x) => `<li>${esc(x)}</li>`).join('')}</ul></article>`).join('')}</div></div></section>`
+      + `<section class="chapter tight" aria-labelledby="t-faq"><div class="wrap narrow"><h2 id="t-faq" class="h2">Questions fréquentes</h2>${h.faq.map(([q, a]) => `<details class="card aura-faq"><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div></section>`
+      + `<nav class="chapter tight" aria-label="Explorer HOMI"><div class="wrap"><h2 class="h2">Explorer HOMI</h2><div class="aura-grid">${[...others.map((o) => [o.name, `/${o.slug}`]), ['Aura', '/aura'], ['Blog', '/blog'], ['Programme ambassadeur', '/ambassadeurs']].map(([n, u]) => `<a class="card aura-item hub-link" href="${u}"><strong>${esc(n)}</strong></a>`).join('')}</div></div></nav>`;
+    const html = tpl.replace('{{TITLE}}', () => esc(h.title)).replaceAll('{{DESC}}', () => esc(h.desc)).replaceAll('{{NAME}}', () => esc(h.name)).replaceAll('{{CANONICAL}}', url)
+      .replace('{{JSONLD}}', () => JSON.stringify(jsonld).replace(/</g, '\\u003c')).replace('{{CONTENT}}', () => content);
+    mkdirSync(path.join(dist, h.slug), { recursive: true });
+    writeFileSync(path.join(dist, h.slug, 'index.html'), html);
+    hubPaths.push(`/${h.slug}`);
+  }
+  console.log(`pages piliers : ${hubPaths.join(', ')}`);
+}
+
 // 3 quinquies) /blog : articles NON médicaux de la bibliothèque (rédaction assistée par IA, sources citées)
 const blogPaths = [];
 {
@@ -251,7 +283,7 @@ const legal = readdirSync(path.join(root, 'legal-site')).filter((d) => statSync(
 for (const d of legal) cpSync(path.join(root, 'legal-site', d), path.join(dist, d), { recursive: true });
 
 // 5) robots.txt et sitemap : seulement les pages publiques
-const pub = ['/', '/aura', '/fonctionnalites', '/ambassadeurs', '/contact', ...legal.map((d) => `/${d}`), ...blogPaths];
+const pub = ['/', ...hubPaths, '/aura', '/fonctionnalites', '/ambassadeurs', '/contact', ...legal.map((d) => `/${d}`), ...blogPaths];
 writeFileSync(path.join(dist, 'robots.txt'), production
   ? `User-agent: *\nAllow: /\nDisallow: /app\nDisallow: /auth/\nDisallow: /admin\nDisallow: /ambassadors/dashboard\nDisallow: /r/\nDisallow: /demo\nSitemap: ${siteUrl}/sitemap.xml\n`
   : 'User-agent: *\nDisallow: /\n');
