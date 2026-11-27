@@ -22,7 +22,7 @@ const STATE: Record<string, TKey> = { ok: 'wg.state.ok', empty: 'wg.state.empty'
 function FamilyShape({ f }: { f: Family }) {
   const t = useTheme();
   const s = FAMILY_SHAPE[f];
-  const unit = 26;
+  const unit = 32;
   return (
     <View style={{ alignItems: 'center', gap: 4 }} accessible accessibilityLabel={tr(s.label)}>
       <View style={{ width: s.w * unit, height: s.h * unit, borderRadius: f === 'lock' ? 8 : 9, borderWidth: 1.5, borderColor: t.colors.border, backgroundColor: t.colors.surface }} />
