@@ -35,6 +35,10 @@ const ALLOW: Record<string, string> = {
   'widgets/PregnancyWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
   'widgets/TasksWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
   'widgets/PlanningWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/AuraWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/RelayWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/HealthWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/StoryWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
   // illustrations et logo
   'components/Illustrations.tsx': 'illustrations vectorielles',
   'components/FetusArt.tsx': 'illustration du fœtus',

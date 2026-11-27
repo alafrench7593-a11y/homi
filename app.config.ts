@@ -144,7 +144,7 @@ const config: ExpoConfig = {
     ['expo-splash-screen', { backgroundColor: '#000000', image: './assets/splash-icon.png', imageWidth: 200, dark: { backgroundColor: '#000000', image: './assets/splash-icon-dark.png' } }],
     ['expo-notifications', { color: '#1F1B1A' }],
     ['expo-local-authentication', { faceIDPermission: 'Face ID protège l’accès aux informations les plus intimes de votre suivi du cycle.' }],
-    // Six widgets iOS (27/11/2026, refus App Review 4.4) : données réelles de HOMI, compteurs qui avancent seuls,
+    // Dix widgets iOS (27/11/2026, refus App Review 4.4) : données réelles de HOMI, compteurs qui avancent seuls,
     // jauges et graphiques ; petit, moyen, grand et écran verrouillé. Lecture seule (aucune action depuis le widget).
     // Nécessite une build native (indisponible dans Expo Go). Contenu poussé par src/widgets/useWidgetsSync.ts.
     ['expo-widgets', { widgets: [
@@ -154,6 +154,10 @@ const config: ExpoConfig = {
       { name: 'PregnancyWidget', displayName: 'Grossesse', description: 'Semaine, progression jusqu’au terme et prochain rendez-vous, discrets si vous le souhaitez.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
       { name: 'TasksWidget', displayName: 'Tâches de la famille', description: 'Tâches restantes, en retard, faites cette semaine et prochaines échéances.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
       { name: 'PlanningWidget', displayName: 'Planning', description: 'Prochain rendez-vous avec compte à rebours et rendez-vous des 7 jours.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
+      { name: 'AuraWidget', displayName: 'Aura', description: 'Une suggestion pour maintenant et les priorités du jour, calculées sur le téléphone.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
+      { name: 'RelayWidget', displayName: 'Relais', description: 'Qui est de garde maintenant, le prochain relais et le dernier relais transmis.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
+      { name: 'HealthWidget', displayName: 'Santé', description: 'Prochaine prise, prochain rendez-vous de santé et prochain vaccin, discrets par défaut.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
+      { name: 'StoryWidget', displayName: 'Mon histoire', description: 'Une photo souvenir, l’âge exact de votre enfant et le souvenir de la semaine.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
     ] }],
     // Choix de photos : pas de micro (aucune vidéo n'est enregistrée), mêmes textes que ci-dessus
     ['expo-image-picker', {

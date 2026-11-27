@@ -64,6 +64,10 @@ function load(name: WidgetName): Updatable | null {
       case 'PregnancyWidget': return (require('./PregnancyWidget') as typeof import('./PregnancyWidget')).default as unknown as Updatable;
       case 'TasksWidget': return (require('./TasksWidget') as typeof import('./TasksWidget')).default as unknown as Updatable;
       case 'PlanningWidget': return (require('./PlanningWidget') as typeof import('./PlanningWidget')).default as unknown as Updatable;
+      case 'AuraWidget': return (require('./AuraWidget') as typeof import('./AuraWidget')).default as unknown as Updatable;
+      case 'RelayWidget': return (require('./RelayWidget') as typeof import('./RelayWidget')).default as unknown as Updatable;
+      case 'HealthWidget': return (require('./HealthWidget') as typeof import('./HealthWidget')).default as unknown as Updatable;
+      case 'StoryWidget': return (require('./StoryWidget') as typeof import('./StoryWidget')).default as unknown as Updatable;
     }
     /* eslint-enable @typescript-eslint/no-require-imports */
   } catch {
@@ -72,7 +76,7 @@ function load(name: WidgetName): Updatable | null {
   return null;
 }
 
-/** Enregistre la mise en page des six widgets dès l'ouverture de l'app (sinon iOS n'a rien à dessiner). */
+/** Enregistre la mise en page des dix widgets dès l'ouverture de l'app (sinon iOS n'a rien à dessiner). */
 export function registerWidgets(): void {
   for (const name of WIDGET_NAMES) load(name);
 }
@@ -100,10 +104,67 @@ export function pushWidget<P extends object>(name: WidgetName, entries: Entry<P>
 const TITLE: Record<WidgetName, TKey> = {
   CycleWidget: 'wg.cycle.titleD', BabyWidget: 'wg.baby.title', SleepWidget: 'wg.sleep.title',
   PregnancyWidget: 'wg.preg.titleD', TasksWidget: 'wg.tasks.title', PlanningWidget: 'wg.plan.title',
+  AuraWidget: 'wg.aura.title', RelayWidget: 'wg.relay.title', HealthWidget: 'wg.health.title', StoryWidget: 'wg.story.title',
 };
+
+/**
+ * Photo de « Mon histoire » : une PETITE copie (côté le plus long ≤ 300 px, JPEG) dans le dossier partagé avec
+ * l'extension (le moteur du widget ne lit que ce dossier). Une seule photo gardée ; téléchargée une seule fois par photo
+ * (le lien signé n'est demandé que si la copie manque). Échec (hors ligne, droits, format) : chaîne vide = pas de photo.
+ */
+const STORY_PREFIX = 'homi-story-';
+export const STORY_PHOTO_MAX = 300;
+export async function storyPhotoFile(photo: { id: string; width?: number | null; height?: number | null }, signedUrl: () => Promise<string>): Promise<string> {
+  try {
+    /* eslint-disable @typescript-eslint/no-require-imports */
+    const { widgetsDirectory } = require('expo-widgets') as typeof import('expo-widgets');
+    const { File, Paths } = require('expo-file-system') as typeof import('expo-file-system');
+    const { manipulateAsync, SaveFormat } = require('expo-image-manipulator') as typeof import('expo-image-manipulator');
+    const { fitWithin } = require('@/lib/domain/childPhotos') as typeof import('@/lib/domain/childPhotos');
+    /* eslint-enable @typescript-eslint/no-require-imports */
+    if (!widgetsDirectory) return '';
+    const safe = photo.id.replace(/[^a-zA-Z0-9-]/g, '').slice(0, 64);
+    if (!safe) return '';
+    const target = new File(widgetsDirectory, `${STORY_PREFIX}${safe}.jpg`);
+    if (target.exists) return target.uri;
+    const src = await signedUrl();
+    if (!src) return '';
+    let local = src;
+    let tmp: InstanceType<typeof File> | null = null;
+    if (/^https?:/i.test(src)) {
+      tmp = new File(Paths.cache, `${STORY_PREFIX}download.jpg`);
+      await File.downloadFileAsync(src, tmp, { idempotent: true });
+      local = tmp.uri;
+    }
+    let w = photo.width ?? 0; let h = photo.height ?? 0;
+    if (!w || !h) { const probe = await manipulateAsync(local, [], { format: SaveFormat.JPEG }); w = probe.width; h = probe.height; }
+    const out = await manipulateAsync(local, [{ resize: fitWithin(w, h, STORY_PHOTO_MAX) }], { compress: 0.8, format: SaveFormat.JPEG });
+    purgeStoryPhotos();
+    new File(out.uri).moveSync(target);
+    try { if (tmp?.exists) tmp.delete(); } catch { /* cache */ }
+    return target.exists ? target.uri : '';
+  } catch {
+    return '';
+  }
+}
+
+/** Efface les photos « Mon histoire » du dossier partagé (déconnexion, changement de compte, mode discret). */
+export function purgeStoryPhotos(): void {
+  try {
+    /* eslint-disable @typescript-eslint/no-require-imports */
+    const { widgetsDirectory } = require('expo-widgets') as typeof import('expo-widgets');
+    const { Directory } = require('expo-file-system') as typeof import('expo-file-system');
+    /* eslint-enable @typescript-eslint/no-require-imports */
+    if (!widgetsDirectory) return;
+    for (const f of new Directory(widgetsDirectory).list()) {
+      if (f.name.startsWith(STORY_PREFIX)) { try { f.delete(); } catch { /* déjà absent */ } }
+    }
+  } catch { /* pas de dossier partagé */ }
+}
 
 export function clearAllWidgets(): void {
   const now = new Date();
+  purgeStoryPhotos();
   for (const name of WIDGET_NAMES) {
     last.delete(name);
     pushWidget(name, [{ date: now, props: { s: 'out', title: tr(TITLE[name]), url: 'homi://', msg: tr('wg.out') } }]);

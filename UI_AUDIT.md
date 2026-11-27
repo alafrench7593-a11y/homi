@@ -36,3 +36,7 @@ Non vérifié : rendu natif iOS/Android sur appareil ; contraste de primaryText 
 
 ## 26/11/2026 — refonte lots 8-10 (allaitement, garde, économie)
 Porte de fin : tsc propre ; Jest 4988/4988 ; audit_ux 33 écrans × 5 configurations, 0 bloquant (signalements non bloquants inchangés). Non vérifié : rendu natif sur appareil.
+
+## 27/11/2026 — widgets iOS : dix widgets (4 nouveaux) et refonte
+Porte de fin (adaptée aux widgets) : rendu exécuté dans le vrai moteur expo-widgets (ExpoWidgets.bundle) pour les 10 vues × 4 formats × clair/sombre × couleur/teinté/vibrant × 6–7 états ; aucun type de nœud non dessiné, aucun slot, chaque texte limité en lignes et réductible, privacySensitive sur les données sensibles ; tsc propre ; Jest widgets, i18n, couleurs verts.
+Non vérifié : rendu SwiftUI réel sur iPhone/iPad (tailles réelles, troncatures, mode teinté iOS 18/26), photo « Mon histoire » réellement téléchargée — nécessite le build natif 17.

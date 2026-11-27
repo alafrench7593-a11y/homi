@@ -76,6 +76,9 @@ interface UiState {
   /** Widgets iOS : masquer prénoms et intitulés (tâches, rendez-vous). Réglage propre à cet appareil. */
   widgetsPrivate: boolean;
   setWidgetsPrivate: (v: boolean) => void;
+  /** Widgets iOS : enfant affiché par les widgets (réglage de cet appareil) ; null = celui de l'accueil. */
+  widgetChildId: string | null;
+  setWidgetChildId: (id: string | null) => void;
   /** Mode simple (par défaut) : l'essentiel seulement ; les fonctions avancées apparaissent si on le désactive. */
   simpleMode: boolean;
   setSimpleMode: (on: boolean) => void;
@@ -232,6 +235,7 @@ export const useUiStore = create<UiState>()(
       hapticsEnabled: true,
       cycleWidgetDetailed: false,
       widgetsPrivate: false,
+      widgetChildId: null,
       simpleMode: true,
       setSimpleMode: (simpleMode) => set({ simpleMode }),
       focusPicks: { day: '', ids: [] },
@@ -310,9 +314,10 @@ export const useUiStore = create<UiState>()(
       setHaptics: (hapticsEnabled) => set({ hapticsEnabled }),
       setCycleWidgetDetailed: (cycleWidgetDetailed) => set({ cycleWidgetDetailed }),
       setWidgetsPrivate: (widgetsPrivate) => set({ widgetsPrivate }),
+      setWidgetChildId: (widgetChildId) => set({ widgetChildId }),
       reset: () => set({ householdId: null, knownHouseholds: [], subject: null, nightMode: false }),
       resetAccount: () => set({
-        householdId: null, knownHouseholds: [], subject: null, nightMode: false, homeChildId: null,
+        householdId: null, knownHouseholds: [], subject: null, nightMode: false, homeChildId: null, widgetChildId: null,
         quickActionFavorites: {}, quickShortcuts: null, cocoonFavorites: null, dailyActionFavorites: null,
         growQuestions: null, nightQuestions: {}, nearbyTown: null, cycleCardItems: null, cycleCardShortcuts: null,
         adviceSeen: [], toolFavorites: [], toolPinned: [], toolHidden: [], pantry: [], pantryMigrated: [], toolFilter: '',
