@@ -17,3 +17,7 @@
 .ml-row > span { font-weight: 700; }
 .ml-sel { display: grid; gap: 4px; } .ml-sel span { font-size: .8125rem; color: var(--muted); }
 @media (min-width: 700px) { .ml-sel span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
+.tool-more { padding: 20px 22px; margin-top: 28px; } .tool-more p { margin: 0 0 10px; }
+.ml-status { position: sticky; top: 84px; z-index: 5; margin: 16px 0 0; padding: 12px 16px; border-radius: 14px; background: var(--ink); color: var(--surface); font-weight: 600; }
+.ml-status a { color: inherit; text-decoration: underline; }
+.cl-group h2 small { font-weight: 600; color: var(--muted); font-size: .8125rem; }

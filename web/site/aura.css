@@ -7,7 +7,7 @@
 .aura-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 .aura-item { padding: 24px; } .aura-item h3 { margin: 0 0 8px; font-size: 1.125rem; } .aura-item p { margin: 0; color: var(--muted); }
 .aura-list { padding-left: 1.2em; display: grid; gap: 10px; }
-.aura-faq { padding: 18px 22px; margin-bottom: 12px; } .aura-faq summary { cursor: pointer; font-weight: 600; min-height: 24px; } .aura-faq p { margin: 12px 0 0; color: var(--muted); }
+.aura-faq { padding: 18px 22px; margin-bottom: 12px; } .aura-faq summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; } .aura-faq p { margin: 12px 0 0; color: var(--muted); }
 .cta-row.center { justify-content: center; }
 .h3 { font-size: 1.125rem; margin: 0 0 8px; }
 .hub-link { text-decoration: none; color: inherit; display: flex; align-items: center; min-height: 64px; transition: transform .2s; }

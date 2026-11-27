@@ -6,7 +6,7 @@ export const OUTILS = [
   { slug: 'checklist-naissance', name: 'Checklist naissance', title: 'Checklist naissance : valise de maternité, affaires de bébé, démarches | HOMI',
     desc: 'Checklist gratuite pour préparer la naissance : valise de maternité, affaires de bébé, logement, démarches et achats. Cochez, imprimez ; rien n’est envoyé.',
     h1: 'Checklist naissance', lead: 'Valise de maternité, affaires de bébé, démarches : tout ce qu’il faut préparer, à cocher au fil des semaines. Vos coches restent sur cet appareil.',
-    kind: 'checklist', lists: ['maternity_bag', 'baby_items', 'admin', 'home', 'purchases', 'coparent', 'siblings', 'multiples'],
+    kind: 'checklist', lists: ['maternity_bag', 'baby_items', 'admin', 'home', 'purchases', 'coparent', 'siblings', 'multiples'], optional: ['siblings', 'multiples'],
     homi: ['application-grossesse', 'Dans HOMI, ces listes se cochent depuis le téléphone, à côté du suivi de grossesse.'],
     faq: [['Quand préparer la valise de maternité ?', 'Beaucoup de maternités conseillent qu’elle soit prête quelques semaines avant le terme ; suivez les consignes de votre maternité, qui fournit souvent sa propre liste.'],
       ['Mes coches sont-elles enregistrées ?', 'Uniquement dans ce navigateur, sur cet appareil. Rien n’est envoyé à HOMI ni à un tiers.']] },
