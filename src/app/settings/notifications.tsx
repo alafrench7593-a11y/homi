@@ -8,7 +8,7 @@
  * notifications envoyées par le serveur les respectent aussi (13/11/2026, HOMI_NOTIFICATION_RULES.md).
  */
 import React, { useEffect, useState } from 'react';
-import { Platform, View } from 'react-native';
+import { View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
@@ -18,8 +18,6 @@ import { useAutoNotificationsSync, useAutoPrefs, useSaveAutoPrefs } from '@/lib/
 import { DEFAULT_AUTO_PREFS, type AutoPrefs } from '@/lib/domain/autoNotifs';
 import { getBottleNotificationsEnabled, getPermission, notificationsSupported, requestPermission, sendTestNotification, setBottleNotificationsEnabled, syncAutoNotifications, type PermissionState } from '@/lib/notifications';
 import { spacing } from '@/theme/tokens';
-import { useUiStore } from '@/lib/store';
-import { refreshWidgets, widgetStatus, type WidgetStatus } from '@/widgets/push';
 import { formatDate, formatTime, t as tr, type TKey } from '@/i18n';
 
 export default function NotificationSettings() {
@@ -27,14 +25,7 @@ export default function NotificationSettings() {
   const { data } = useAutoPrefs();
   const save = useSaveAutoPrefs();
   const prefs = data ?? DEFAULT_AUTO_PREFS;
-  // Widgets iOS : réglages propres à cet appareil (prénoms et intitulés ; cycle et grossesse détaillés)
-  const widgetsPrivate = useUiStore((s) => s.widgetsPrivate);
-  const setWidgetsPrivate = useUiStore((s) => s.setWidgetsPrivate);
-  const cycleDetailed = useUiStore((s) => s.cycleWidgetDetailed);
-  const setCycleDetailed = useUiStore((s) => s.setCycleWidgetDetailed);
   // Live Activities iOS : activées par défaut, réglage propre à cet appareil
-  const liveOn = useUiStore((s) => s.liveActivitiesEnabled);
-  const setLiveOn = useUiStore((s) => s.setLiveActivitiesEnabled);
   const plans = useAutoNotificationsSync() ?? [];
   const [perm, setPerm] = useState<PermissionState>('undetermined');
   const [bottle, setBottle] = useState(true);
@@ -80,20 +71,8 @@ export default function NotificationSettings() {
 
       <SectionTitle title={tr('wg.set.title')} />
       <Card testID="nt-widget">
-        <ToggleRow label={tr('wg.set.private')} hint={tr('wg.set.privateD')} value={widgetsPrivate} onChange={setWidgetsPrivate} />
-        <ToggleRow label={tr('wg.set.cycle')} hint={tr('wg.set.cycleD')} value={cycleDetailed} onChange={setCycleDetailed} />
-        <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('wg.set.howto')}</Text>
-        {Platform.OS === 'ios' ? <WidgetDiagnostics /> : null}
+        <ListRow icon="grid" title={tr('wg.page.row')} subtitle={tr('wg.page.rowD')} onPress={() => router.push('/settings/widgets' as never)} testID="nt-widgets-page" />
       </Card>
-
-      {Platform.OS === 'ios' ? (
-        <>
-          <SectionTitle title={tr('lv.set.title')} />
-          <Card testID="nt-live">
-            <ToggleRow label={tr('lv.set.toggle')} hint={tr('lv.set.toggleD')} value={liveOn !== false} onChange={setLiveOn} />
-          </Card>
-        </>
-      ) : null}
 
       <SectionTitle title={tr('nt.quietTitle')} />
       <Card testID="nt-quiet">
@@ -128,20 +107,3 @@ export default function NotificationSettings() {
   );
 }
 
-/** Diagnostic des widgets iOS (27/11/2026) : ce que l'app a réellement envoyé à chaque widget, et un bouton pour tout renvoyer. */
-function WidgetDiagnostics() {
-  const [rows, setRows] = useState<Record<string, WidgetStatus>>({});
-  const load = () => { void widgetStatus().then(setRows).catch(() => undefined); };
-  useEffect(load, []);
-  return (
-    <View style={{ marginTop: spacing.sm, gap: spacing.xxs }} testID="nt-widget-diag">
-      <Text variant="caption" style={{ fontWeight: '600' }}>{tr('wg.diag.title')}</Text>
-      {Object.entries(rows).map(([name, r]) => (
-        <Text key={name} variant="caption" muted selectable>
-          {`${name.slice(0, -6)} : ${r.error ? tr('wg.diag.error', { msg: r.error }) : r.at ? tr('wg.diag.sent', { time: formatTime(new Date(r.at)), state: r.state, n: r.stored ?? '?' }) : tr('wg.diag.never')}`}
-        </Text>
-      ))}
-      <Button variant="secondary" label={tr('wg.diag.refresh')} onPress={() => { refreshWidgets(); setTimeout(load, 1500); }} />
-    </View>
-  );
-}
