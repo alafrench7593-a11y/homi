@@ -16,6 +16,7 @@ import { useRecentTools } from '@/features/hubs/recentTools';
 import { useGuideReading } from '@/features/cycleTrack/readingStore';
 import { useRelayStore } from '@/features/relay/relayStore';
 import { useTourStore } from '@/features/tour/store';
+import { clearAllWidgets } from '@/widgets/push';
 
 /** Clés `homi.*` de l'APPAREIL, conservées au changement de compte. */
 export const DEVICE_KEYS = new Set(['homi.install-id', 'homi.liquidLens.v1', 'homi.demo.purchase-sim', 'homi.demo.catalog-sim']);
@@ -32,6 +33,7 @@ export async function resetAccountState(): Promise<void> {
   // 1) en mémoire d'abord : la prochaine écriture persistée ne réécrit pas l'ancien compte
   for (const s of STORES) { try { s.setState(s.getInitialState() as never, true); } catch { /* magasin absent */ } }
   useUiStore.getState().resetAccount();
+  try { clearAllWidgets(); } catch { /* module absent */ }
   // 2) sur le disque
   try {
     const keys = accountKeys(await AsyncStorage.getAllKeys());

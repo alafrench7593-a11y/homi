@@ -32,7 +32,6 @@ import { CycleCalendar } from './CycleCalendar';
 import { InsightView } from './InsightCard';
 import { CAL, LockedCard, Pill, useLocked } from './ui';
 import { useUiStore } from '@/lib/store';
-import { syncCycleWidget, widgetContent } from '@/widgets/syncCycleWidget';
 import { BRAND } from '@/config/brand';
 import { MotionItem, MotionList } from '@/motion/ListMotion';
 
@@ -70,19 +69,6 @@ export function CycleHome({ goal }: { goal: Goal }) {
     .map((r) => nextOccurrence(r.schedule)).filter((d): d is Date => !!d).map((d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`)), [reminders, ctx]);
   const nextReminder = (reminders ?? []).filter((r) => r.enabled && reminderRelevant(r, ctx)).map((r) => ({ r, at: nextOccurrence(r.schedule) }))
     .filter((x) => x.at).sort((a, b) => a.at!.getTime() - b.at!.getTime())[0];
-
-  // Widget iOS : discret par défaut, détaillé seulement si choisi (jamais si le cycle est masqué ou verrouillé)
-  const widgetDetailed = useUiStore((st) => st.cycleWidgetDetailed);
-  useEffect(() => {
-    if (loading) return;
-    const day = cycleDayOn(data.periods, data.today);
-    const until = data.est.nextPeriod ? daysBetween(data.today, data.est.nextPeriod) : null;
-    void syncCycleWidget(widgetContent({
-      detailed: widgetDetailed, hidden: !!prefs.hide_on_home || prefs.lock_mode === 'cycle', appName: BRAND.name, open: tr('c3.widget.open'),
-      cycleDay: day ? tr('c3.home.cycleDay', { day }) : null,
-      next: until != null && until > 0 ? tr('c3.home.nextPeriod', { count: until }) : until === 0 ? tr('c3.home.nextPeriodToday') : null,
-    }));
-  }, [loading, data, widgetDetailed, prefs.hide_on_home, prefs.lock_mode]);
 
   if (loading) return <Skeleton kind="card" rows={4} />;
   if (prefs.hide_on_home) {

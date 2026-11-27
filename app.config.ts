@@ -144,10 +144,17 @@ const config: ExpoConfig = {
     ['expo-splash-screen', { backgroundColor: '#000000', image: './assets/splash-icon.png', imageWidth: 200, dark: { backgroundColor: '#000000', image: './assets/splash-icon-dark.png' } }],
     ['expo-notifications', { color: '#1F1B1A' }],
     ['expo-local-authentication', { faceIDPermission: 'Face ID protège l’accès aux informations les plus intimes de votre suivi du cycle.' }],
-    // Widget iOS « Mon cycle » (discret par défaut) — nécessite une build de développement, indisponible dans Expo Go
-    ['expo-widgets', { widgets: [{ name: 'CycleWidget', displayName: 'Mon cycle', description: 'Jour du cycle, de façon discrète si vous le souhaitez.', ios: { supportedFamilies: ['systemSmall', 'accessoryRectangular'] } },
-      // Widget « Bébé » (07/11/2026) : prochain biberon et prochaine prise, discret par défaut, jamais le nom d'un médicament
-      { name: 'BabyWidget', displayName: 'Bébé', description: 'Heure du prochain biberon et de la prochaine prise, si vous le souhaitez.', ios: { supportedFamilies: ['systemSmall', 'accessoryRectangular'] } }] }],
+    // Six widgets iOS (27/11/2026, refus App Review 4.4) : données réelles de HOMI, compteurs qui avancent seuls,
+    // jauges et graphiques ; petit, moyen, grand et écran verrouillé. Lecture seule (aucune action depuis le widget).
+    // Nécessite une build native (indisponible dans Expo Go). Contenu poussé par src/widgets/useWidgetsSync.ts.
+    ['expo-widgets', { widgets: [
+      { name: 'BabyWidget', displayName: 'Bébé', description: 'Dernier biberon, dernière tétée, totaux du jour et 7 derniers jours.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
+      { name: 'SleepWidget', displayName: 'Sommeil', description: 'Sieste en cours ou éveil, sommeil du jour et des 7 derniers jours.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
+      { name: 'CycleWidget', displayName: 'Mon cycle', description: 'Jour du cycle et prochain repère, de façon discrète si vous le souhaitez.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
+      { name: 'PregnancyWidget', displayName: 'Grossesse', description: 'Semaine, progression jusqu’au terme et prochain rendez-vous, discrets si vous le souhaitez.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
+      { name: 'TasksWidget', displayName: 'Tâches de la famille', description: 'Tâches restantes, en retard, faites cette semaine et prochaines échéances.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
+      { name: 'PlanningWidget', displayName: 'Planning', description: 'Prochain rendez-vous avec compte à rebours et rendez-vous des 7 jours.', ios: { supportedFamilies: ['systemSmall', 'systemMedium', 'systemLarge', 'accessoryRectangular'] } },
+    ] }],
     // Choix de photos : pas de micro (aucune vidéo n'est enregistrée), mêmes textes que ci-dessus
     ['expo-image-picker', {
       photosPermission: 'L’accès aux photos sert uniquement à ajouter une image que vous choisissez : document, photo de profil, test du cycle, produit à analyser ou album de votre enfant.',

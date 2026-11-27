@@ -259,13 +259,3 @@ describe('résumé du mois', () => {
     expect(shiftMonth('2026-01', -1)).toBe('2025-12');
   });
 });
-
-describe('widget iOS', () => {
-  const { widgetContent } = require('@/widgets/widgetContent') as typeof import('@/widgets/widgetContent');
-  it('discret par défaut, jamais détaillé si le cycle est masqué', () => {
-    const base = { appName: 'Au fil de nous', open: 'Ouvrir', cycleDay: 'Jour 12 du cycle', next: 'Règles estimées dans 16 jours' };
-    expect(widgetContent({ ...base, detailed: false, hidden: false })).toEqual({ title: 'Au fil de nous', line1: 'Ouvrir', line2: '' });
-    expect(widgetContent({ ...base, detailed: true, hidden: true }).line1).toBe('Ouvrir');
-    expect(widgetContent({ ...base, detailed: true, hidden: false })).toEqual({ title: 'Au fil de nous', line1: 'Jour 12 du cycle', line2: 'Règles estimées dans 16 jours' });
-  });
-});

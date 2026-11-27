@@ -18,6 +18,7 @@ import { useAutoNotificationsSync, useAutoPrefs, useSaveAutoPrefs } from '@/lib/
 import { DEFAULT_AUTO_PREFS, type AutoPrefs } from '@/lib/domain/autoNotifs';
 import { getBottleNotificationsEnabled, getPermission, notificationsSupported, requestPermission, sendTestNotification, setBottleNotificationsEnabled, syncAutoNotifications, type PermissionState } from '@/lib/notifications';
 import { spacing } from '@/theme/tokens';
+import { useUiStore } from '@/lib/store';
 import { formatDate, formatTime, t as tr, type TKey } from '@/i18n';
 
 export default function NotificationSettings() {
@@ -25,6 +26,11 @@ export default function NotificationSettings() {
   const { data } = useAutoPrefs();
   const save = useSaveAutoPrefs();
   const prefs = data ?? DEFAULT_AUTO_PREFS;
+  // Widgets iOS : réglages propres à cet appareil (prénoms et intitulés ; cycle et grossesse détaillés)
+  const widgetsPrivate = useUiStore((s) => s.widgetsPrivate);
+  const setWidgetsPrivate = useUiStore((s) => s.setWidgetsPrivate);
+  const cycleDetailed = useUiStore((s) => s.cycleWidgetDetailed);
+  const setCycleDetailed = useUiStore((s) => s.setCycleWidgetDetailed);
   const plans = useAutoNotificationsSync() ?? [];
   const [perm, setPerm] = useState<PermissionState>('undetermined');
   const [bottle, setBottle] = useState(true);
@@ -68,10 +74,11 @@ export default function NotificationSettings() {
         <ToggleRow label={tr('ms.weeklyPref')} hint={tr('ms.weeklyPrefD')} value={prefs.weeklyMood} onChange={(v) => set({ weeklyMood: v })} />
       </Card>
 
-      <SectionTitle title={tr('wb.title')} />
+      <SectionTitle title={tr('wg.set.title')} />
       <Card testID="nt-widget">
-        <ToggleRow label={tr('wb.pref')} hint={tr('wb.prefD')} value={prefs.widgetDetails} onChange={(v) => set({ widgetDetails: v })} />
-        <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('wb.howto')}</Text>
+        <ToggleRow label={tr('wg.set.private')} hint={tr('wg.set.privateD')} value={widgetsPrivate} onChange={setWidgetsPrivate} />
+        <ToggleRow label={tr('wg.set.cycle')} hint={tr('wg.set.cycleD')} value={cycleDetailed} onChange={setCycleDetailed} />
+        <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('wg.set.howto')}</Text>
       </Card>
 
       <SectionTitle title={tr('nt.quietTitle')} />

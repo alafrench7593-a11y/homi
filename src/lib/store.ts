@@ -73,6 +73,9 @@ interface UiState {
   /** Widget iOS du cycle : contenu détaillé (sinon discret). Réglage propre à cet appareil. */
   cycleWidgetDetailed: boolean;
   setCycleWidgetDetailed: (v: boolean) => void;
+  /** Widgets iOS : masquer prénoms et intitulés (tâches, rendez-vous). Réglage propre à cet appareil. */
+  widgetsPrivate: boolean;
+  setWidgetsPrivate: (v: boolean) => void;
   /** Mode simple (par défaut) : l'essentiel seulement ; les fonctions avancées apparaissent si on le désactive. */
   simpleMode: boolean;
   setSimpleMode: (on: boolean) => void;
@@ -228,6 +231,7 @@ export const useUiStore = create<UiState>()(
       subject: null,
       hapticsEnabled: true,
       cycleWidgetDetailed: false,
+      widgetsPrivate: false,
       simpleMode: true,
       setSimpleMode: (simpleMode) => set({ simpleMode }),
       focusPicks: { day: '', ids: [] },
@@ -305,6 +309,7 @@ export const useUiStore = create<UiState>()(
       setSubject: (subject) => set({ subject }),
       setHaptics: (hapticsEnabled) => set({ hapticsEnabled }),
       setCycleWidgetDetailed: (cycleWidgetDetailed) => set({ cycleWidgetDetailed }),
+      setWidgetsPrivate: (widgetsPrivate) => set({ widgetsPrivate }),
       reset: () => set({ householdId: null, knownHouseholds: [], subject: null, nightMode: false }),
       resetAccount: () => set({
         householdId: null, knownHouseholds: [], subject: null, nightMode: false, homeChildId: null,

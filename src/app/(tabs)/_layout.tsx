@@ -9,6 +9,7 @@ import { Dock } from '@/components/Dock';
 import { t as tr } from '@/i18n';
 import { useDigestSync } from '@/lib/data/hooks-social';
 import { useAutoNotificationsSync } from '@/lib/data/hooks-autoNotifs';
+import { useWidgetsSync } from '@/widgets/useWidgetsSync';
 import { AuraIntroHost } from '@/features/aura/AuraEntry';
 import { useBackendMode } from '@/lib/demoMode';
 import { useUiStore } from '@/lib/store';
@@ -24,6 +25,12 @@ function DigestSync() {
 /** Notifications automatiques (rendez-vous, tâches, échéances, papiers) : reprogrammées dès que les données changent. */
 function AutoNotificationsSync() {
   useAutoNotificationsSync();
+  return null;
+}
+
+/** Six widgets iOS alimentés par le cache de l'app (27/11/2026). */
+function WidgetsSync() {
+  useWidgetsSync();
   return null;
 }
 
@@ -49,6 +56,7 @@ export default function TabsLayout() {
     <>
     {session ? <DigestSync /> : null}
     {session ? <AutoNotificationsSync /> : null}
+    {session ? <WidgetsSync /> : null}
     {/* Fond de chaque onglet défini dès le premier rendu (couleur du thème : jamais de flash blanc au premier passage) ;
         changement d'onglet sans animation du navigateur : l'écran arrive en fondu bref (`Screen`, voile frère). */}
     {/* Refonte du 17/11/2026 : Aujourd'hui · Moi · [action centrale] · Enfant · Famille. « Outils » : entrée fixe en tête
