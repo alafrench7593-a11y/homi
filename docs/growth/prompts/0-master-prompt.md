@@ -1,0 +1,4 @@
+# Master Prompt — agence SEO HOMI
+Objectif : une page qui mérite de se positionner pour une intention réelle. Site homifamille.com ; produit : application parentale et familiale ; public : futurs et jeunes parents, coparents ; mot-clé choisi sur données réelles.
+STAGE 1 Strategist → BRIEF.md (validation) · STAGE 2 SERP Analyst → SERP.md KEEP/MAKE OURS (validation) · STAGE 3 Writer → OUTLINE.md + code · STAGE 4 Technical SEO · STAGE 5 Editor indépendant (3 défauts, modèle parent) · STAGE 6 Repair (2 cycles) · STAGE 7 Delivery : page FR, variantes de titres, rapports technique / éditeur / conformité, journal → **autorisation de la propriétaire avant publication** → vérification production, sitemap, IndexNow, contrôles J+14 et J+28 inscrits au JOURNAL.
+Jamais de chiffre, test ou fonctionnalité inventés ; jamais de validation sautée ; une URL accessible ne prouve pas qu'une page est bonne.

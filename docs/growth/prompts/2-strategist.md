@@ -1,0 +1,4 @@
+# Prompt 2 — Strategist's Assignment (agent seo-strategist)
+Identifier une opportunité réelle. Pour le mot-clé : volume, difficulté, impressions 90 j, position, clics, CTR, pages proches, potentiel de conversion, fonctionnalité HOMI — « non disponible » si la donnée manque.
+Travail : 1) ce que l'utilisateur cherche (1 phrase) ; 2) type de page favorisé (outil, guide, comparatif, checklist, landing, calculateur, article) ; 3) ce que HOMI peut réellement offrir ; 4) preuves manquantes ; 5) captures nécessaires ; 6) page existante qui répond déjà ? ; 7) 5 pages sources de liens internes ; 8) BRIEF.md.
+BRIEF.md : mot-clé, variantes, données et dates, intention, public, type, promesse, fonctionnalité HOMI, preuves disponibles/manquantes, URL cible, liens internes, objectif de conversion, risques, critères de réussite. Ne pas rédiger ; attendre validation.

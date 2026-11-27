@@ -1,0 +1,2 @@
+# Prompt 4 — Technical SEO (agent technical-seo)
+Lire BRIEF, SERP, OUTLINE. Avant indexation : HTML brut sans JS (`curl -sL -A Googlebot URL > docs/growth/projects/<slug>/reviews/raw-html/page.html`), contenu principal présent, un H1, title, description, canonical, hreflang si plusieurs langues, JSON-LD = visible, ≥ 5 liens entrants si possible, sitemap, mobile, CLS, erreurs JS, CTA, non-régression (Playwright 320/390/1366, e2e/site_menu_contact.py). Preuve pour chaque défaut. Ne modifie pas la rédaction. Pas d'indexation avant l'éditeur.

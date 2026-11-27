@@ -1,0 +1,2 @@
+# Prompt 6 — Repair Policy (ceo-orchestrator ; exécution writer / frontend / technical-seo)
+Par défaut : lire la preuve → plus petite correction utile → garder les décisions approuvées → ne modifier que les fichiers concernés → relancer les tests concernés → vérifier les sections voisines → nouvelles preuves → revalidation par l'éditeur. 2 cycles max ; sinon arrêter, expliquer, proposer des options, demander une décision. Jamais supprimer un test ; jamais régénérer une page entière pour une phrase.

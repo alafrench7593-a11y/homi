@@ -24,13 +24,13 @@ BRIEF (requête, intention, outil HOMI lié, URL) → SERP si accès → plan �
 - Économie : recherches ciblées, réutiliser les générateurs, une ligne dans `docs/SUIVI.md` par lot.
 
 ## Routine quotidienne automatique (tâche planifiée « HOMI SEO quotidien »)
-Une session neuve chaque matin. Faire UN lot complet, pas plus :
+Une session neuve chaque matin, pilotée par le sous-agent `ceo-orchestrator` qui délègue aux agents de `.claude/agents/` selon la tâche (pas les 24 chaque jour). Méthode des pages : skill `seo-agency`. Faire UN lot complet, pas plus :
 1. `git fetch origin homi/fondations && git checkout -B homi/seo-auto origin/homi/fondations`. Lire la fin de `docs/SUIVI.md` et `docs/growth/JOURNAL.md` (créer s'il manque) pour ne pas refaire la veille.
 2. Données : Search Console via Windsor.ai (`searchconsole`, 28 derniers jours : requêtes, pages, impressions, position). Sans donnée : le dire et choisir dans `docs/growth/BACKLOG.md`.
 3. Choisir l'action au plus fort impact parmi : (a) page existante avec impressions mais CTR faible → titre/description/FAQ ; (b) requête sans page dédiée → nouvelle page univers/outil (générateurs existants) ; (c) défaut technique (lien mort, H1, JSON-LD, poids) ; (d) élément du backlog.
 4. Construire, puis contrôle technique (build, Playwright 320/390/1366, e2e menu).
 5. Relecture indépendante par un sous-agent (page rendue, format WHERE/OBSERVATION/WHY/FIX/PRESERVE/RECHECK). 2 cycles de réparation max.
-6. Publier seulement si : aucun P0/P1 restant ET aucun contenu santé non relu par un professionnel (sinon : pousser sur `homi/seo-auto`, ne pas publier, noter « à valider »). Publier = fusionner dans `homi/fondations` et pousser, vérifier en ligne, IndexNow.
+6. Ne jamais publier seul (Partie 28 du prompt d'agence, 27/11) : pousser sur `homi/seo-auto`, écrire dans le rapport du jour « À valider : <URL locale/branche>, preuves, défauts restants ». La propriétaire valide ; seule une session qu'elle lance publie sur `homi/fondations`.
 7. Journal : une ligne dans `docs/growth/JOURNAL.md` (date, action, URL, preuve, mesure avant) et une dans `docs/SUIVI.md`. Commit + push.
 Interdits en automatique : prix, abonnements, commissions, données Supabase, publication sur les réseaux, envoi d'e-mails, nouvelle dépendance, suppression de page.
 
