@@ -32,6 +32,9 @@ export default function NotificationSettings() {
   const setWidgetsPrivate = useUiStore((s) => s.setWidgetsPrivate);
   const cycleDetailed = useUiStore((s) => s.cycleWidgetDetailed);
   const setCycleDetailed = useUiStore((s) => s.setCycleWidgetDetailed);
+  // Live Activities iOS : activées par défaut, réglage propre à cet appareil
+  const liveOn = useUiStore((s) => s.liveActivitiesEnabled);
+  const setLiveOn = useUiStore((s) => s.setLiveActivitiesEnabled);
   const plans = useAutoNotificationsSync() ?? [];
   const [perm, setPerm] = useState<PermissionState>('undetermined');
   const [bottle, setBottle] = useState(true);
@@ -82,6 +85,15 @@ export default function NotificationSettings() {
         <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('wg.set.howto')}</Text>
         {Platform.OS === 'ios' ? <WidgetDiagnostics /> : null}
       </Card>
+
+      {Platform.OS === 'ios' ? (
+        <>
+          <SectionTitle title={tr('lv.set.title')} />
+          <Card testID="nt-live">
+            <ToggleRow label={tr('lv.set.toggle')} hint={tr('lv.set.toggleD')} value={liveOn !== false} onChange={setLiveOn} />
+          </Card>
+        </>
+      ) : null}
 
       <SectionTitle title={tr('nt.quietTitle')} />
       <Card testID="nt-quiet">

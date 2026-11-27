@@ -13,6 +13,8 @@ import { useOfflineStore } from '@/lib/offline';
 import { t as tr } from '@/i18n';
 import { finishPatch, isOngoing, startRow, switchPatch, type BreastSide, type FeedLike } from '@/lib/domain/breastSession';
 import type { Breastfeed, Child, Pumping } from '@/lib/types';
+import { endLiveFor } from '@/live/controller';
+import { useUiStore } from '@/lib/store';
 
 /** Colonne absente du schéma du serveur (migration pas encore déployée). */
 export const missingColumn = (e: unknown) => e instanceof BackendError && (e.code === 'PGRST204' || e.code === '42703');
@@ -83,6 +85,7 @@ export function useBreastActions(child: Child | null | undefined) {
     async finish(feed: Breastfeed, now = new Date()) {
       const ok = await guardedUpdate('breastfeeds', feed as unknown as Record<string, unknown> & { id: string }, { ...finishPatch(feed as FeedLike, now) });
       inv('breastfeeds');
+      void endLiveFor(`breast:${feed.id}`); // Live Activity de cette tétée : fin tout de suite
       if (ok) return;
       // Déjà terminée (double appui, autre appareil) : rien à refaire, ce n'est pas une erreur
       const [cur] = await backend.select<Breastfeed>({ table: 'breastfeeds', filters: [eq('id', feed.id)] });
@@ -103,7 +106,11 @@ export function usePumpActions(child: Child | null | undefined) {
   return {
     async add(amount_ml: number, side: Pumping['side'], at = new Date()) {
       if (!child) throw new FeedError(tr('bt.err.child'));
-      return add.mutateAsync({ child_id: child.id, household_id: child.household_id, note: null, at: at.toISOString(), amount_ml, side });
+      const r = await add.mutateAsync({ child_id: child.id, household_id: child.household_id, note: null, at: at.toISOString(), amount_ml, side });
+      // Séance notée : le chrono de tire-lait (et sa Live Activity) s'arrête
+      const run = useUiStore.getState().pumpRun;
+      if (run?.childId === child.id) useUiStore.getState().setPumpRun(null);
+      return r;
     },
     async edit(p: Pumping, patch: Partial<Pick<Pumping, 'amount_ml' | 'side' | 'at'>>) {
       const ok = await guardedUpdate('pumpings', p as unknown as Record<string, unknown> & { id: string }, patch);

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { resetAccountState } from './accountReset';
 import { clearAllWidgets } from '@/widgets/push';
+import { endAllLive } from '@/live/controller';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useIsRestoring, useQueryClient } from '@tanstack/react-query';
 import { backend, initBackendMode, onBackendSwitch, type Session } from './backend';
@@ -108,7 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         writeLastUser(uid);
         void setQueueOwner(uid); // saisies hors ligne d'un autre compte effacées de ce téléphone
         // Widgets iOS : plus aucune donnée du compte précédent sur l'écran d'accueil (déconnexion ou autre compte)
-        if (!sameAsLastTime && (!s || (previous && previous !== uid))) clearAllWidgets();
+        if (!sameAsLastTime && (!s || (previous && previous !== uid))) { clearAllWidgets(); void endAllLive(); }
         if (!s) useUiStore.getState().reset();
         // Hors de l'écouteur d'authentification : Supabase interdit d'y attendre un autre appel (blocage)
         else setTimeout(() => { void bootstrapAccount().then(() => qc.invalidateQueries()); }, 0);

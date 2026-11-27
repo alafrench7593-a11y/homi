@@ -11,6 +11,7 @@ import { useInvalidate, useLogs, usePremium, useRows } from './hooks';
 import { DEFAULT_NOTIFY, notifyPrefs, openNightWaking, planDay, planSleepNotifications, sleepKind, type NotifyPrefs, type SleepFeedback, type SleepPlan, type SleepProfile, type SleepRecord } from '../domain/sleepPlanner';
 import { syncSleepNotifications } from '../notifications';
 import type { Breastfeed, Bottle, Child, Sleep } from '../types';
+import { endLiveFor } from '@/live/controller';
 
 export interface SleepProfileRow extends SleepProfile { id: string; household_id: string; updated_at?: string }
 export interface SleepFeedbackRow extends SleepFeedback { id: string; household_id: string }
@@ -114,6 +115,7 @@ export function useSleepActions(child: Child | null | undefined) {
       if (waking) { patch.wake_events = (open.wake_events ?? []).slice(0, -1); patch.wakeups = Math.max(0, (open.wakeups ?? 1) - 1); }
       await backend.update('sleeps', patch, [eq('id', open.id)]);
       done();
+      void endLiveFor(`sleep:${open.id}`); // Live Activity de ce sommeil : fin tout de suite
     },
     /** Réveil pendant la nuit (la nuit continue). */
     async nightWaking(at: Date) {

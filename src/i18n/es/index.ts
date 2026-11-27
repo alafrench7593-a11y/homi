@@ -131,3 +131,4 @@ export { periodCompare } from './periodCompare';
 export { auraVision } from './auraVision';
 export { motion } from './motion';
 export { widgets } from './widgets';
+export { live } from './live';

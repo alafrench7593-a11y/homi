@@ -7,7 +7,7 @@
  * Pas de minuteur : la table ne garde pas de durée de séance (aucune durée inventée).
  */
 import React, { useMemo, useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import { Tray, useTray } from '@/components/reacticx/tray';
 import { Glass, GlassButton, GlassSegmentedControl } from '@/components/glass';
@@ -24,6 +24,7 @@ import { usePumpActions } from '@/lib/data/hooks-breast';
 import { agoLabel } from '@/lib/domain/dayTimeline';
 import { clock } from '@/lib/domain/sleepPlanner';
 import { lastPump, parsePumpMl, pumpsByDay, type PumpLike } from '@/lib/domain/pumpSession';
+import { useUiStore } from '@/lib/store';
 import type { Child, Pumping } from '@/lib/types';
 import { useTheme } from '@/theme/ThemeProvider';
 import { fonts, MIN_TOUCH, radius, spacing } from '@/theme/tokens';
@@ -47,6 +48,11 @@ function QuickPump({ child, lastSide }: { child: Child; lastSide: PSide | null }
   const inflight = useRef(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Chrono de séance (iOS, Live Activities activées) : affiché sur l'écran verrouillé ; s'arrête quand la séance est notée
+  const run = useUiStore((s) => s.pumpRun);
+  const setRun = useUiStore((s) => s.setPumpRun);
+  const liveOn = useUiStore((s) => s.liveActivitiesEnabled) !== false && Platform.OS === 'ios';
+  const mine = run?.childId === child.id ? run : null;
   const save = async () => {
     if (inflight.current) return;                 // double appui : une seule séance
     inflight.current = true; setBusy(true); setError(null);
@@ -83,6 +89,14 @@ function QuickPump({ child, lastSide }: { child: Child; lastSide: PSide | null }
           </Tappable>
         ))}
       </View>
+      {liveOn && mine ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+          <Text variant="small" muted style={[{ flex: 1 }, TABULAR]} testID="bt-pump-run">{tr('lv.pump.since', { time: clock(new Date(mine.since)) })}</Text>
+          <GlassButton variant="tertiary" size="sm" label={tr('lv.pump.stop')} onPress={() => setRun(null)} testID="bt-pump-run-stop" />
+        </View>
+      ) : liveOn ? (
+        <GlassButton variant="secondary" full icon="play" label={tr('lv.pump.start')} onPress={() => { haptic('light'); setRun({ childId: child.id, since: Date.now() }); }} testID="bt-pump-run-start" />
+      ) : null}
       <GlassButton variant="primary" size="lg" full icon="check" label={tr('bt.pump.save', { ml })} disabled={busy} onPress={() => void save()} testID="bt-pump-save" />
       {error ? <Text variant="small" color={t.colors.danger} testID="bt-pump-error" accessibilityLiveRegion="assertive">{error}</Text> : null}
     </View>

@@ -35,6 +35,7 @@ const ALLOW: Record<string, string> = {
   'widgets/PregnancyWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
   'widgets/TasksWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
   'widgets/PlanningWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'live/LiveActivities.tsx': 'Live Activities iOS (vue du moteur expo-widgets : palette locale, aucun accès aux jetons)',
   // illustrations et logo
   'components/Illustrations.tsx': 'illustrations vectorielles',
   'components/FetusArt.tsx': 'illustration du fœtus',

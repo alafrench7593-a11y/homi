@@ -37,6 +37,7 @@ import { useMotion } from '@/motion/useMotion';
 import { useTheme } from '@/theme/ThemeProvider';
 import { alpha, fonts, radius, spacing, typography } from '@/theme/tokens';
 import { t as tr } from '@/i18n';
+import { endLiveFor } from '@/live/controller';
 
 export interface RunningBottle { id: string; started_at: string; paused_at: string | null; paused_seconds: number; ended_at: string | null; prepared_ml: number | null }
 export interface SessionResult { id: string; seconds: number; consumed: number | null; prepared: number | null; next: string | null }
@@ -102,7 +103,7 @@ export function useBottleSession(child: Child) {
   const cancel = async () => {
     if (!running) return false;
     const ok = await run(() => backend.remove('bottles', [eq('id', running.id)]), tr('u4.bi.cancelled'));
-    if (ok) settled.current.add(running.id);
+    if (ok) { settled.current.add(running.id); void endLiveFor(`bottle:${running.id}`); }
     return ok;
   };
 
@@ -128,6 +129,7 @@ export function useBottleSession(child: Child) {
     });
     if (!ok) return false;
     settled.current.add(running.id);
+    void endLiveFor(`bottle:${running.id}`); // Live Activity : fin tout de suite, sans attendre le rechargement
     toast(next ? tr('u4.bi.savedNext', { time: atClock(next) }) : tr('u4.bi.saved'));
     setResult({ id: running.id, seconds: secs, consumed: c, prepared: p, next });
     return true;

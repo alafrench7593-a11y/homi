@@ -76,6 +76,12 @@ interface UiState {
   /** Widgets iOS : masquer prénoms et intitulés (tâches, rendez-vous). Réglage propre à cet appareil. */
   widgetsPrivate: boolean;
   setWidgetsPrivate: (v: boolean) => void;
+  /** Live Activities iOS (écran verrouillé, Dynamic Island) pendant un suivi en cours. Réglage propre à cet appareil. */
+  liveActivitiesEnabled: boolean;
+  setLiveActivitiesEnabled: (v: boolean) => void;
+  /** Chrono de séance de tire-lait lancé sur cet appareil (la table ne garde pas de durée) ; null sinon. */
+  pumpRun: { childId: string; since: number } | null;
+  setPumpRun: (v: { childId: string; since: number } | null) => void;
   /** Mode simple (par défaut) : l'essentiel seulement ; les fonctions avancées apparaissent si on le désactive. */
   simpleMode: boolean;
   setSimpleMode: (on: boolean) => void;
@@ -232,6 +238,8 @@ export const useUiStore = create<UiState>()(
       hapticsEnabled: true,
       cycleWidgetDetailed: false,
       widgetsPrivate: false,
+      liveActivitiesEnabled: true,
+      pumpRun: null,
       simpleMode: true,
       setSimpleMode: (simpleMode) => set({ simpleMode }),
       focusPicks: { day: '', ids: [] },
@@ -310,13 +318,15 @@ export const useUiStore = create<UiState>()(
       setHaptics: (hapticsEnabled) => set({ hapticsEnabled }),
       setCycleWidgetDetailed: (cycleWidgetDetailed) => set({ cycleWidgetDetailed }),
       setWidgetsPrivate: (widgetsPrivate) => set({ widgetsPrivate }),
-      reset: () => set({ householdId: null, knownHouseholds: [], subject: null, nightMode: false }),
+      setLiveActivitiesEnabled: (liveActivitiesEnabled) => set({ liveActivitiesEnabled }),
+      setPumpRun: (pumpRun) => set({ pumpRun }),
+      reset: () => set({ householdId: null, knownHouseholds: [], subject: null, nightMode: false, pumpRun: null }),
       resetAccount: () => set({
         householdId: null, knownHouseholds: [], subject: null, nightMode: false, homeChildId: null,
         quickActionFavorites: {}, quickShortcuts: null, cocoonFavorites: null, dailyActionFavorites: null,
         growQuestions: null, nightQuestions: {}, nearbyTown: null, cycleCardItems: null, cycleCardShortcuts: null,
         adviceSeen: [], toolFavorites: [], toolPinned: [], toolHidden: [], pantry: [], pantryMigrated: [], toolFilter: '',
-        homeLayouts: {},
+        homeLayouts: {}, pumpRun: null,
       }),
     }),
     {
