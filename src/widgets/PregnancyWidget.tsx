@@ -3,8 +3,8 @@
  * barre), jours restants et prochain rendez-vous. Une entrée par jour : la semaine avance seule à minuit.
  * DISCRET par défaut (ni le mot « grossesse » ni l'intitulé du rendez-vous) ; textes marqués sensibles.
  */
-import { Gauge, HStack, ProgressView, Spacer, Text, VStack } from '@expo/ui/swift-ui';
-import { containerBackground, font, foregroundStyle, gaugeStyle, lineLimit, minimumScaleFactor, monospacedDigit, privacySensitive, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
+import { Gauge, HStack, Image, ProgressView, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { containerBackground, cornerRadius, font, foregroundStyle, frame, gaugeStyle, lineLimit, minimumScaleFactor, monospacedDigit, privacySensitive, resizable, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 import type { PregnancyProps } from './model';
 
@@ -15,6 +15,8 @@ const PregnancyWidgetView = (props: PregnancyProps, env: WidgetEnvironment) => {
   const C = { bg: dark ? '#17140E' : '#FBF7EE', text: dark ? '#F6F0E2' : '#2A2416', muted: dark ? '#C0B496' : '#62583F', accent: full ? (dark ? '#E7C27A' : '#8A6414') : (dark ? '#F6F0E2' : '#2A2416') };
   const fam = env.widgetFamily;
   const l = props.l || {};
+  const logoEl = props.logo && full ? <Image uiImage={props.logo} modifiers={[resizable(), frame({ width: 16, height: 16 }), cornerRadius(4)]} /> : null;
+  const brand = <HStack spacing={5}>{logoEl}<Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title || 'HOMI'}</Text><Spacer /></HStack>;
   const det = !!props.detailed;
   const root = [containerBackground(C.bg, 'widget'), widgetURL(props.url || 'homi://')];
   const pct = Math.round((props.pct || 0) * 100);
@@ -23,11 +25,11 @@ const PregnancyWidgetView = (props: PregnancyProps, env: WidgetEnvironment) => {
   const label = (s: string) => <Text modifiers={[font({ textStyle: 'caption2', weight: 'semibold' }), foregroundStyle(C.muted), lineLimit(1)]}>{s}</Text>;
 
   if (props.s !== 'ok') {
-    if (fam === 'accessoryRectangular') return <VStack alignment="leading" modifiers={[widgetURL(props.url || 'homi://')]}><Text modifiers={[font({ textStyle: 'headline' })]}>{props.title}</Text><Text modifiers={[lineLimit(2)]}>{props.msg}</Text></VStack>;
+    if (fam === 'accessoryRectangular') return <VStack alignment="leading" modifiers={[widgetURL(props.url || 'homi://')]}><Text modifiers={[font({ textStyle: 'headline' })]}>{props.title || 'HOMI'}</Text><Text modifiers={[lineLimit(2)]}>{props.msg || 'Ouvre HOMI.'}</Text></VStack>;
     return (
       <VStack alignment="leading" spacing={6} modifiers={root}>
-        <Text modifiers={[font({ textStyle: 'headline', weight: 'bold' }), foregroundStyle(C.accent)]}>{props.title}</Text>
-        <Text modifiers={[font({ textStyle: 'footnote' }), foregroundStyle(C.text), lineLimit(4)]}>{props.msg}</Text>
+        {brand}
+        <Text modifiers={[font({ textStyle: 'footnote' }), foregroundStyle(C.text), lineLimit(4)]}>{props.msg || 'Ouvre HOMI pour afficher tes informations ici.'}</Text>
         <Spacer />
       </VStack>
     );
@@ -68,7 +70,7 @@ const PregnancyWidgetView = (props: PregnancyProps, env: WidgetEnvironment) => {
   if (fam === 'systemSmall') {
     return (
       <VStack alignment="leading" spacing={6} modifiers={root}>
-        <HStack>{ring}<Spacer /></HStack>
+        <HStack alignment="top">{ring}<Spacer />{logoEl}</HStack>
         {week}
         <Text modifiers={[font({ textStyle: 'caption', weight: 'semibold' }), foregroundStyle(C.accent), monospacedDigit(), lineLimit(1), minimumScaleFactor(0.8), privacySensitive()]}>{`${dueLabel} · ${props.toDue} ${l.days}`}</Text>
         <Spacer />
@@ -77,7 +79,7 @@ const PregnancyWidgetView = (props: PregnancyProps, env: WidgetEnvironment) => {
   }
   return (
     <VStack alignment="leading" spacing={fam === 'systemLarge' ? 14 : 8} modifiers={root}>
-      <Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title}</Text>
+      {brand}
       <HStack alignment="center" spacing={14}>
         {ring}
         <VStack alignment="leading" spacing={2}>

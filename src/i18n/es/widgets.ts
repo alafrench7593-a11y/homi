@@ -74,4 +74,9 @@ export const widgets = {
   'wg.set.cycle': "Ciclo y embarazo detallados",
   'wg.set.cycleD': "Desactivado: ninguna palabra relacionada con el ciclo, la anticoncepción o el embarazo aparece en la pantalla de inicio. En la pantalla bloqueada, esta información siempre está oculta.",
   'wg.set.howto': "Para añadir uno: mantén pulsada la pantalla de inicio del iPhone o iPad, toca «+» y elige «HOMI». Seis widgets: ciclo, bebé, sueño, embarazo, tareas y agenda.",
+  'wg.diag.title': "Estado de los widgets",
+  'wg.diag.refresh': "Actualizar los widgets",
+  'wg.diag.never': "aún no enviado",
+  'wg.diag.sent': "enviado a las {time} ({state}) · {n} entrada(s) guardada(s)",
+  'wg.diag.error': "error: {msg}",
 };

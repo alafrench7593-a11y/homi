@@ -4,7 +4,7 @@
  * Le cache se rafraîchit au retour au premier plan (focusManager) et après chaque saisie (invalidation) :
  * la frise du widget suit sans délai, y compris les saisies du coparent dès qu'elles sont chargées.
  */
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BRAND } from '@/config/brand';
 import { t as tr, type TKey } from '@/i18n';
 import { useAuth } from '@/lib/auth';
@@ -24,7 +24,7 @@ import { useUiStore } from '@/lib/store';
 import { useBackendMode } from '@/lib/demoMode';
 import type { Breastfeed, Sleep } from '@/lib/types';
 import { babyEntries, cycleEntries, planningEntries, pregnancyEntries, sleepEntries, tasksEntries } from './model';
-import { pushWidget } from './push';
+import { pushWidget, subscribeRefresh } from './push';
 
 const url = (path: string) => `${BRAND.scheme}://${path.replace(/^\//, '')}`;
 const dayLetter = (d: Date) => {
@@ -142,11 +142,13 @@ export function useWidgetsSync(): void {
   }), [appts.data, discreet, nowMin, isDemo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Envoi uniquement une fois les données chargées (jamais un faux « vide » pendant le chargement)
+  const [tick, setTick] = useState(0);
+  useEffect(() => subscribeRefresh(() => setTick((n) => n + 1)), []);
   const ready = !!me;
-  useEffect(() => { if (ready && (!cid || (bottles.data && feeds.data))) pushWidget('BabyWidget', baby); }, [ready, baby]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (ready && (!cid || sleeps.data)) pushWidget('SleepWidget', sleep); }, [ready, sleep]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (ready && periods.data) pushWidget('CycleWidget', cycle); }, [ready, cycle]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (ready && appts.data) pushWidget('PregnancyWidget', preg); }, [ready, preg]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (ready && tasks.data) pushWidget('TasksWidget', fam); }, [ready, fam]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (ready && appts.data) pushWidget('PlanningWidget', plan); }, [ready, plan]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && (!cid || (bottles.data && feeds.data))) pushWidget('BabyWidget', baby); }, [ready, baby, tick]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && (!cid || sleeps.data)) pushWidget('SleepWidget', sleep); }, [ready, sleep, tick]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && periods.data) pushWidget('CycleWidget', cycle); }, [ready, cycle, tick]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && appts.data) pushWidget('PregnancyWidget', preg); }, [ready, preg, tick]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && tasks.data) pushWidget('TasksWidget', fam); }, [ready, fam, tick]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && appts.data) pushWidget('PlanningWidget', plan); }, [ready, plan, tick]); // eslint-disable-line react-hooks/exhaustive-deps
 }

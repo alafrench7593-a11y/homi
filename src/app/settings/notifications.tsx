@@ -8,7 +8,7 @@
  * notifications envoyées par le serveur les respectent aussi (13/11/2026, HOMI_NOTIFICATION_RULES.md).
  */
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import { Screen } from '@/components/Screen';
 import { useToast } from '@/components/Overlays';
@@ -19,6 +19,7 @@ import { DEFAULT_AUTO_PREFS, type AutoPrefs } from '@/lib/domain/autoNotifs';
 import { getBottleNotificationsEnabled, getPermission, notificationsSupported, requestPermission, sendTestNotification, setBottleNotificationsEnabled, syncAutoNotifications, type PermissionState } from '@/lib/notifications';
 import { spacing } from '@/theme/tokens';
 import { useUiStore } from '@/lib/store';
+import { refreshWidgets, widgetStatus, type WidgetStatus } from '@/widgets/push';
 import { formatDate, formatTime, t as tr, type TKey } from '@/i18n';
 
 export default function NotificationSettings() {
@@ -79,6 +80,7 @@ export default function NotificationSettings() {
         <ToggleRow label={tr('wg.set.private')} hint={tr('wg.set.privateD')} value={widgetsPrivate} onChange={setWidgetsPrivate} />
         <ToggleRow label={tr('wg.set.cycle')} hint={tr('wg.set.cycleD')} value={cycleDetailed} onChange={setCycleDetailed} />
         <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('wg.set.howto')}</Text>
+        {Platform.OS === 'ios' ? <WidgetDiagnostics /> : null}
       </Card>
 
       <SectionTitle title={tr('nt.quietTitle')} />
@@ -111,5 +113,23 @@ export default function NotificationSettings() {
       {notificationsSupported && perm === 'granted' ? <Button label={tr('nt.test')} icon="bell" variant="ghost" onPress={() => void sendTestNotification().then(() => toast(tr('nt.testSent')))} /> : null}
       <Text variant="caption" muted>{tr('nt.private')}</Text>
     </Screen>
+  );
+}
+
+/** Diagnostic des widgets iOS (27/11/2026) : ce que l'app a réellement envoyé à chaque widget, et un bouton pour tout renvoyer. */
+function WidgetDiagnostics() {
+  const [rows, setRows] = useState<Record<string, WidgetStatus>>({});
+  const load = () => { void widgetStatus().then(setRows).catch(() => undefined); };
+  useEffect(load, []);
+  return (
+    <View style={{ marginTop: spacing.sm, gap: spacing.xxs }} testID="nt-widget-diag">
+      <Text variant="caption" style={{ fontWeight: '600' }}>{tr('wg.diag.title')}</Text>
+      {Object.entries(rows).map(([name, r]) => (
+        <Text key={name} variant="caption" muted selectable>
+          {`${name.slice(0, -6)} : ${r.error ? tr('wg.diag.error', { msg: r.error }) : r.at ? tr('wg.diag.sent', { time: formatTime(new Date(r.at)), state: r.state, n: r.stored ?? '?' }) : tr('wg.diag.never')}`}
+        </Text>
+      ))}
+      <Button variant="secondary" label={tr('wg.diag.refresh')} onPress={() => { refreshWidgets(); setTimeout(load, 1500); }} />
+    </View>
   );
 }

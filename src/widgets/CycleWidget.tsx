@@ -4,8 +4,8 @@
  * DISCRET par défaut (aucun mot lié aux règles ni à la contraception) ; détaillé seulement si la personne le choisit ;
  * « protégé » si le cycle est masqué ou verrouillé dans l'app. Textes marqués sensibles (masqués iPhone verrouillé).
  */
-import { Gauge, HStack, Spacer, Text, VStack } from '@expo/ui/swift-ui';
-import { containerBackground, font, foregroundStyle, gaugeStyle, lineLimit, minimumScaleFactor, monospacedDigit, privacySensitive, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
+import { Gauge, HStack, Image, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { containerBackground, cornerRadius, font, foregroundStyle, frame, gaugeStyle, lineLimit, minimumScaleFactor, monospacedDigit, privacySensitive, resizable, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 import type { CycleProps } from './model';
 
@@ -16,6 +16,8 @@ const CycleWidgetView = (props: CycleProps, env: WidgetEnvironment) => {
   const C = { bg: dark ? '#17121A' : '#FCF6F7', text: dark ? '#F7EEF1' : '#2A1A20', muted: dark ? '#BFA9B1' : '#6A5359', accent: full ? (dark ? '#F0A3B8' : '#A8435F') : (dark ? '#F7EEF1' : '#2A1A20') };
   const fam = env.widgetFamily;
   const l = props.l || {};
+  const logoEl = props.logo && full ? <Image uiImage={props.logo} modifiers={[resizable(), frame({ width: 16, height: 16 }), cornerRadius(4)]} /> : null;
+  const brand = <HStack spacing={5}>{logoEl}<Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title || 'HOMI'}</Text><Spacer /></HStack>;
   const det = !!props.detailed;
   const root = [containerBackground(C.bg, 'widget'), widgetURL(props.url || 'homi://')];
   const nextLabel = det ? l.next : l.nextDiscreet;
@@ -23,11 +25,11 @@ const CycleWidgetView = (props: CycleProps, env: WidgetEnvironment) => {
   const label = (s: string) => <Text modifiers={[font({ textStyle: 'caption2', weight: 'semibold' }), foregroundStyle(C.muted), lineLimit(1)]}>{s}</Text>;
 
   if (props.s !== 'ok') {
-    if (fam === 'accessoryRectangular') return <VStack alignment="leading" modifiers={[widgetURL(props.url || 'homi://')]}><Text modifiers={[font({ textStyle: 'headline' })]}>{props.title}</Text><Text modifiers={[lineLimit(2)]}>{props.msg}</Text></VStack>;
+    if (fam === 'accessoryRectangular') return <VStack alignment="leading" modifiers={[widgetURL(props.url || 'homi://')]}><Text modifiers={[font({ textStyle: 'headline' })]}>{props.title || 'HOMI'}</Text><Text modifiers={[lineLimit(2)]}>{props.msg || 'Ouvre HOMI.'}</Text></VStack>;
     return (
       <VStack alignment="leading" spacing={6} modifiers={root}>
-        <Text modifiers={[font({ textStyle: 'headline', weight: 'bold' }), foregroundStyle(C.accent)]}>{props.title}</Text>
-        <Text modifiers={[font({ textStyle: 'footnote' }), foregroundStyle(C.text), lineLimit(4)]}>{props.msg}</Text>
+        {brand}
+        <Text modifiers={[font({ textStyle: 'footnote' }), foregroundStyle(C.text), lineLimit(4)]}>{props.msg || 'Ouvre HOMI pour afficher tes informations ici.'}</Text>
         <Spacer />
       </VStack>
     );
@@ -63,7 +65,7 @@ const CycleWidgetView = (props: CycleProps, env: WidgetEnvironment) => {
   if (fam === 'systemSmall') {
     return (
       <VStack alignment="leading" spacing={6} modifiers={root}>
-        <HStack>{ring}<Spacer /></HStack>
+        <HStack alignment="top">{ring}<Spacer />{logoEl}</HStack>
         {dayText}
         <Text modifiers={[font({ textStyle: 'caption', weight: 'semibold' }), foregroundStyle(C.accent), monospacedDigit(), lineLimit(1), minimumScaleFactor(0.8), privacySensitive()]}>{`${nextLabel} · ${untilText}`}</Text>
         <Spacer />
@@ -73,7 +75,7 @@ const CycleWidgetView = (props: CycleProps, env: WidgetEnvironment) => {
   }
   return (
     <VStack alignment="leading" spacing={fam === 'systemLarge' ? 14 : 8} modifiers={root}>
-      <Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title}</Text>
+      {brand}
       <HStack alignment="center" spacing={14}>
         {ring}
         <VStack alignment="leading" spacing={2}>

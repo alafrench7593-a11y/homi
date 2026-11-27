@@ -74,4 +74,9 @@ export const widgets = {
   'wg.set.cycle': "Cycle et grossesse détaillés",
   'wg.set.cycleD': "Désactivé : aucun mot lié au cycle, à la contraception ou à la grossesse n’apparaît sur l’écran d’accueil. Sur l’écran verrouillé, ces informations sont toujours masquées.",
   'wg.set.howto': "Pour en ajouter : appui long sur l’écran d’accueil de l’iPhone ou de l’iPad, puis « + » et « HOMI ». Six widgets : cycle, bébé, sommeil, grossesse, tâches et planning.",
+  'wg.diag.title': "État des widgets",
+  'wg.diag.refresh': "Actualiser les widgets",
+  'wg.diag.never': "pas encore envoyé",
+  'wg.diag.sent': "envoyé à {time} ({state}) · {n} entrée(s) enregistrée(s)",
+  'wg.diag.error': "erreur : {msg}",
 };

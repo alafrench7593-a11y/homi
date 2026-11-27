@@ -74,4 +74,9 @@ export const widgets = {
   'wg.set.cycle': "Detailed cycle and pregnancy",
   'wg.set.cycleD': "Off: no word related to your cycle, contraception or pregnancy appears on the Home Screen. On the Lock Screen, this information is always hidden.",
   'wg.set.howto': "To add one: touch and hold the Home Screen of your iPhone or iPad, tap “+” and choose “HOMI”. Six widgets: cycle, baby, sleep, pregnancy, tasks and schedule.",
+  'wg.diag.title': "Widget status",
+  'wg.diag.refresh': "Refresh widgets",
+  'wg.diag.never': "not sent yet",
+  'wg.diag.sent': "sent at {time} ({state}) · {n} stored entry(ies)",
+  'wg.diag.error': "error: {msg}",
 };

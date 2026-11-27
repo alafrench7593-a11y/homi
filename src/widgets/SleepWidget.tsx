@@ -3,8 +3,8 @@
  * du jour, nombre de siestes, durée de la dernière, et heures de sommeil des 7 derniers jours (graphique).
  * Contenu calculé par l'app (model.ts → sleepEntries). Règles du moteur : tout passe par les props.
  */
-import { Chart, Gauge, HStack, Spacer, Text, VStack } from '@expo/ui/swift-ui';
-import { containerBackground, font, foregroundStyle, frame, gaugeStyle, lineLimit, minimumScaleFactor, monospacedDigit, privacySensitive, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
+import { Chart, Gauge, HStack, Image, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { containerBackground, cornerRadius, font, foregroundStyle, frame, gaugeStyle, lineLimit, minimumScaleFactor, monospacedDigit, privacySensitive, resizable, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 import type { SleepProps } from './model';
 
@@ -15,16 +15,18 @@ const SleepWidgetView = (props: SleepProps, env: WidgetEnvironment) => {
   const C = { bg: dark ? '#121320' : '#F6F4FB', text: dark ? '#F1EFFA' : '#1E1B2E', muted: dark ? '#ABA6C4' : '#59546E', accent: full ? (dark ? '#B4A8F0' : '#5A4BB8') : (dark ? '#F1EFFA' : '#1E1B2E') };
   const fam = env.widgetFamily;
   const l = props.l || {};
+  const logoEl = props.logo && full ? <Image uiImage={props.logo} modifiers={[resizable(), frame({ width: 16, height: 16 }), cornerRadius(4)]} /> : null;
+  const brand = <HStack spacing={5}>{logoEl}<Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title || 'HOMI'}</Text><Spacer /></HStack>;
   const root = [containerBackground(C.bg, 'widget'), widgetURL(props.url || 'homi://')];
   const hm = (min: number) => { const h = Math.floor(min / 60); const m = min % 60; return h ? `${h} ${l.h} ${m < 10 ? '0' : ''}${m}` : `${m} min`; };
   const label = (s: string) => <Text modifiers={[font({ textStyle: 'caption2', weight: 'semibold' }), foregroundStyle(C.muted), lineLimit(1)]}>{s}</Text>;
 
   if (props.s !== 'ok') {
-    if (fam === 'accessoryRectangular') return <VStack alignment="leading" modifiers={[widgetURL(props.url || 'homi://')]}><Text modifiers={[font({ textStyle: 'headline' })]}>{props.title}</Text><Text modifiers={[lineLimit(2)]}>{props.msg}</Text></VStack>;
+    if (fam === 'accessoryRectangular') return <VStack alignment="leading" modifiers={[widgetURL(props.url || 'homi://')]}><Text modifiers={[font({ textStyle: 'headline' })]}>{props.title || 'HOMI'}</Text><Text modifiers={[lineLimit(2)]}>{props.msg || 'Ouvre HOMI.'}</Text></VStack>;
     return (
       <VStack alignment="leading" spacing={6} modifiers={root}>
-        <Text modifiers={[font({ textStyle: 'headline', weight: 'bold' }), foregroundStyle(C.accent)]}>{props.title}</Text>
-        <Text modifiers={[font({ textStyle: 'footnote' }), foregroundStyle(C.text), lineLimit(4)]}>{props.msg}</Text>
+        {brand}
+        <Text modifiers={[font({ textStyle: 'footnote' }), foregroundStyle(C.text), lineLimit(4)]}>{props.msg || 'Ouvre HOMI pour afficher tes informations ici.'}</Text>
         <Spacer />
       </VStack>
     );
@@ -37,7 +39,8 @@ const SleepWidgetView = (props: SleepProps, env: WidgetEnvironment) => {
     </VStack>
   );
   const header = (
-    <HStack spacing={4}>
+    <HStack spacing={5}>
+      {logoEl}
       <Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1), privacySensitive()]}>{props.name || props.title}</Text>
       {props.more ? <Text modifiers={[font({ textStyle: 'caption2' }), foregroundStyle(C.muted), lineLimit(1)]}>{props.more}</Text> : null}
       <Spacer />

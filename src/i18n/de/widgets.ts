@@ -74,4 +74,9 @@ export const widgets = {
   'wg.set.cycle': "Zyklus und Schwangerschaft im Detail",
   'wg.set.cycleD': "Aus: Kein Wort zu Zyklus, Verhütung oder Schwangerschaft erscheint auf dem Home-Bildschirm. Auf dem Sperrbildschirm sind diese Informationen immer ausgeblendet.",
   'wg.set.howto': "Zum Hinzufügen: Home-Bildschirm des iPhone oder iPad gedrückt halten, auf „+“ tippen und „HOMI“ wählen. Sechs Widgets: Zyklus, Baby, Schlaf, Schwangerschaft, Aufgaben und Planung.",
+  'wg.diag.title': "Widget-Status",
+  'wg.diag.refresh': "Widgets aktualisieren",
+  'wg.diag.never': "noch nicht gesendet",
+  'wg.diag.sent': "gesendet um {time} ({state}) · {n} gespeicherte(r) Eintrag/Einträge",
+  'wg.diag.error': "Fehler: {msg}",
 };

@@ -23,7 +23,7 @@ function exportedNames(): Set<string> {
   return names;
 }
 const EXPORTED = exportedNames();
-const USED = ['Chart', 'Gauge', 'HStack', 'VStack', 'Spacer', 'Text', 'ProgressView', 'containerBackground', 'font', 'foregroundStyle', 'frame', 'gaugeStyle', 'lineLimit', 'minimumScaleFactor', 'monospacedDigit', 'privacySensitive', 'tint', 'widgetURL'];
+const USED = ['Image', 'resizable', 'cornerRadius', 'Chart', 'Gauge', 'HStack', 'VStack', 'Spacer', 'Text', 'ProgressView', 'containerBackground', 'font', 'foregroundStyle', 'frame', 'gaugeStyle', 'lineLimit', 'minimumScaleFactor', 'monospacedDigit', 'privacySensitive', 'tint', 'widgetURL'];
 
 type Node = { type: string; props: Record<string, unknown> };
 function engine(layout: string) {

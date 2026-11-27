@@ -74,4 +74,9 @@ export const widgets = {
   'wg.set.cycle': "Ciclo e gravidanza in dettaglio",
   'wg.set.cycleD': "Disattivato: nessuna parola legata a ciclo, contraccezione o gravidanza appare nella schermata Home. Nella schermata bloccata queste informazioni sono sempre nascoste.",
   'wg.set.howto': "Per aggiungerne uno: tieni premuta la schermata Home di iPhone o iPad, tocca «+» e scegli «HOMI». Sei widget: ciclo, bebè, sonno, gravidanza, attività e agenda.",
+  'wg.diag.title': "Stato dei widget",
+  'wg.diag.refresh': "Aggiorna i widget",
+  'wg.diag.never': "non ancora inviato",
+  'wg.diag.sent': "inviato alle {time} ({state}) · {n} voce/i salvata/e",
+  'wg.diag.error': "errore: {msg}",
 };

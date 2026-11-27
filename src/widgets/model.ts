@@ -21,7 +21,7 @@ export interface Entry<P> { date: Date; props: P }
 export interface Bar { x: string; y: number }
 
 /** Textes communs passés au widget (le widget ne peut pas traduire lui-même). */
-export interface BaseProps { s: WidgetState; title: string; url: string; msg: string }
+export interface BaseProps { s: WidgetState; title: string; url: string; msg: string; /** Adresse du logo HOMI dans le dossier partagé (ajoutée à l'envoi). */ logo?: string }
 
 const DAY = 86_400_000;
 const ms = (iso: string | null | undefined) => (iso ? Date.parse(iso) : NaN);

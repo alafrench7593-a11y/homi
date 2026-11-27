@@ -4,8 +4,8 @@
  * Lecture seule (pas de case à cocher dans le widget : la synchronisation avec le coparent reste dans l'app).
  * Intitulés masqués en mode discret. Règles du moteur : tout passe par les props.
  */
-import { Chart, Gauge, HStack, Spacer, Text, VStack } from '@expo/ui/swift-ui';
-import { containerBackground, font, foregroundStyle, frame, gaugeStyle, lineLimit, minimumScaleFactor, monospacedDigit, privacySensitive, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
+import { Chart, Gauge, HStack, Image, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { containerBackground, cornerRadius, font, foregroundStyle, frame, gaugeStyle, lineLimit, minimumScaleFactor, monospacedDigit, privacySensitive, resizable, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 import type { TasksProps } from './model';
 
@@ -16,16 +16,18 @@ const TasksWidgetView = (props: TasksProps, env: WidgetEnvironment) => {
   const C = { bg: dark ? '#101614' : '#F4F8F5', text: dark ? '#EAF3EE' : '#18241E', muted: dark ? '#A2B5AA' : '#4F6157', accent: full ? (dark ? '#7CCFA3' : '#23704A') : (dark ? '#EAF3EE' : '#18241E'), late: full ? (dark ? '#FF8A80' : '#B3261E') : (dark ? '#EAF3EE' : '#18241E') };
   const fam = env.widgetFamily;
   const l = props.l || {};
+  const logoEl = props.logo && full ? <Image uiImage={props.logo} modifiers={[resizable(), frame({ width: 16, height: 16 }), cornerRadius(4)]} /> : null;
+  const brand = <HStack spacing={5}>{logoEl}<Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title || 'HOMI'}</Text><Spacer /></HStack>;
   const root = [containerBackground(C.bg, 'widget'), widgetURL(props.url || 'homi://')];
   const pct = Math.round((props.pct || 0) * 100);
   const label = (s: string) => <Text modifiers={[font({ textStyle: 'caption2', weight: 'semibold' }), foregroundStyle(C.muted), lineLimit(1)]}>{s}</Text>;
 
   if (props.s !== 'ok') {
-    if (fam === 'accessoryRectangular') return <VStack alignment="leading" modifiers={[widgetURL(props.url || 'homi://')]}><Text modifiers={[font({ textStyle: 'headline' })]}>{props.title}</Text><Text modifiers={[lineLimit(2)]}>{props.msg}</Text></VStack>;
+    if (fam === 'accessoryRectangular') return <VStack alignment="leading" modifiers={[widgetURL(props.url || 'homi://')]}><Text modifiers={[font({ textStyle: 'headline' })]}>{props.title || 'HOMI'}</Text><Text modifiers={[lineLimit(2)]}>{props.msg || 'Ouvre HOMI.'}</Text></VStack>;
     return (
       <VStack alignment="leading" spacing={6} modifiers={root}>
-        <Text modifiers={[font({ textStyle: 'headline', weight: 'bold' }), foregroundStyle(C.accent)]}>{props.title}</Text>
-        <Text modifiers={[font({ textStyle: 'footnote' }), foregroundStyle(C.text), lineLimit(4)]}>{props.msg}</Text>
+        {brand}
+        <Text modifiers={[font({ textStyle: 'footnote' }), foregroundStyle(C.text), lineLimit(4)]}>{props.msg || 'Ouvre HOMI pour afficher tes informations ici.'}</Text>
         <Spacer />
       </VStack>
     );
@@ -70,7 +72,7 @@ const TasksWidgetView = (props: TasksProps, env: WidgetEnvironment) => {
   if (fam === 'systemSmall') {
     return (
       <VStack alignment="leading" spacing={6} modifiers={root}>
-        <HStack spacing={8}>{counts}<Spacer />{ring}</HStack>
+        <HStack alignment="top" spacing={8}>{counts}<Spacer />{logoEl}</HStack>
         <Spacer />
         {rows[0] ? <Text modifiers={[font({ textStyle: 'footnote', weight: 'medium' }), foregroundStyle(C.text), lineLimit(2), minimumScaleFactor(0.85), privacySensitive()]}>{rows[0].t}</Text> : null}
         <Text modifiers={[font({ textStyle: 'caption2', weight: 'semibold' }), foregroundStyle(props.late ? C.late : C.accent), monospacedDigit(), lineLimit(1)]}>{props.late ? `${props.late} ${l.late}` : `${props.doneWeek} ${l.done}`}</Text>
@@ -81,6 +83,7 @@ const TasksWidgetView = (props: TasksProps, env: WidgetEnvironment) => {
     return (
       <HStack alignment="top" spacing={14} modifiers={root}>
         <VStack alignment="leading" spacing={6}>
+          {brand}
           <HStack spacing={8}>{counts}{ring}</HStack>
           <Spacer />
           {chips}
@@ -94,6 +97,7 @@ const TasksWidgetView = (props: TasksProps, env: WidgetEnvironment) => {
   }
   return (
     <VStack alignment="leading" spacing={10} modifiers={root}>
+      {brand}
       <HStack spacing={12}>{counts}<Spacer />{ring}</HStack>
       {chips}
       <VStack alignment="leading" spacing={6}>{rows.slice(0, 5).map(row)}</VStack>
