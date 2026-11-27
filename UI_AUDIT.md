@@ -40,3 +40,6 @@ Porte de fin : tsc propre ; Jest 4988/4988 ; audit_ux 33 écrans × 5 configurat
 ## 27/11/2026 — Live Activities (écran verrouillé, Dynamic Island), réglage et chrono du tire-lait
 Porte de fin : tsc propre ; Jest ciblé vert (liveRender : 6 types × 7 régions × clair/sombre × à jour/périmé dans le vrai moteur expo-widgets, aucun nœud non géré ni modificateur inconnu ; liveController ; i18n ; hardcodedColors). Réglage = ToggleRow existant ; chrono tire-lait = GlassButton existants, chiffres tabulaires.
 Non vérifié : rendu réel sur iPhone (écran verrouillé, Dynamic Island, troncature du chrono compact), `e2e/audit_ux.py` non relancé pour l'écran Tire-lait et Réglages › Notifications.
+## 27/11/2026 — widgets iOS : dix widgets (4 nouveaux) et refonte
+Porte de fin (adaptée aux widgets) : rendu exécuté dans le vrai moteur expo-widgets (ExpoWidgets.bundle) pour les 10 vues × 4 formats × clair/sombre × couleur/teinté/vibrant × 6–7 états ; aucun type de nœud non dessiné, aucun slot, chaque texte limité en lignes et réductible, privacySensitive sur les données sensibles ; tsc propre ; Jest widgets, i18n, couleurs verts.
+Non vérifié : rendu SwiftUI réel sur iPhone/iPad (tailles réelles, troncatures, mode teinté iOS 18/26), photo « Mon histoire » réellement téléchargée — nécessite le build natif 17.

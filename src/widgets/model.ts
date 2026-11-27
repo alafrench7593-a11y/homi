@@ -1,6 +1,6 @@
 /**
- * Widgets iOS HOMI (27/11/2026, refus App Review 4.4) : calcul PUR du contenu des six widgets
- * (cycle, bébé, sommeil, grossesse, tâches, planning) à partir des vraies données HOMI.
+ * Widgets iOS HOMI (27/11/2026, refus App Review 4.4) : calcul PUR du contenu des dix widgets
+ * (cycle, bébé, sommeil, grossesse, tâches, planning, Aura, relais, santé, Mon histoire) à partir des vraies données HOMI.
  *
  * - Aucune donnée inventée : sans donnée, le widget affiche un état « vide » qui dit quoi faire.
  * - Les compteurs « depuis » sont des dates (le widget les fait avancer seul, sans réveil de l'app).
@@ -12,8 +12,9 @@
  */
 import { addDays, daysBetween, todayISO, toISODate } from '@/lib/domain/dates';
 
-export type WidgetName = 'CycleWidget' | 'BabyWidget' | 'SleepWidget' | 'PregnancyWidget' | 'TasksWidget' | 'PlanningWidget';
-export const WIDGET_NAMES: WidgetName[] = ['CycleWidget', 'BabyWidget', 'SleepWidget', 'PregnancyWidget', 'TasksWidget', 'PlanningWidget'];
+export type WidgetName = 'CycleWidget' | 'BabyWidget' | 'SleepWidget' | 'PregnancyWidget' | 'TasksWidget' | 'PlanningWidget'
+  | 'AuraWidget' | 'RelayWidget' | 'HealthWidget' | 'StoryWidget';
+export const WIDGET_NAMES: WidgetName[] = ['CycleWidget', 'BabyWidget', 'SleepWidget', 'PregnancyWidget', 'TasksWidget', 'PlanningWidget', 'AuraWidget', 'RelayWidget', 'HealthWidget', 'StoryWidget'];
 
 /** État commun : ok = données ; empty = rien à afficher encore ; out = déconnecté ; locked = protégé par l'utilisatrice. */
 export type WidgetState = 'ok' | 'empty' | 'out' | 'locked';
@@ -256,6 +257,191 @@ export function planningEntries(list: readonly ApptLike[] | null, base: Omit<Bas
   };
   // Un rendez-vous passé disparaît à son heure, sans ouvrir l'app
   return [{ date: now, props: build(t) }, ...future.slice(0, 6).map((a) => ({ date: new Date(ms(a.starts_at) + 60_000), props: build(ms(a.starts_at) + 60_000) }))];
+}
+
+// ---------------------------------------------------------------- Enfant des widgets (réglage de l'appareil)
+/**
+ * Enfant affiché par les widgets : celui choisi pour les widgets, sinon celui de l'accueil, sinon le profil actif,
+ * sinon le premier enfant suivi. Un choix qui n'existe plus (enfant retiré, autre compte, accès perdu) est ignoré.
+ */
+export function pickWidgetChild<C extends { id: string }>(children: readonly C[] | null | undefined, o: { widgetChildId: string | null; homeChildId: string | null; subjectChildId: string | null }): C | null {
+  const list = children ?? [];
+  const by = (id: string | null) => (id ? list.find((c) => c.id === id) ?? null : null);
+  return by(o.widgetChildId) ?? by(o.homeChildId) ?? by(o.subjectChildId) ?? list[0] ?? null;
+}
+
+// ---------------------------------------------------------------- Aura (suggestion du moment et priorités du jour)
+/**
+ * Tout est calculé SUR L'APPAREIL par les règles locales déjà présentes (prochaine étape d'Aura, suggestions du thème,
+ * moteur de recommandations) : aucun appel IA, aucun crédit. Le lien d'une question ouvre Aura avec la question
+ * pré-remplie, sans l'envoyer (rien n'est consommé sans le geste du parent).
+ */
+export interface AuraInput {
+  step: { title: string; cta: string; href: string } | null;
+  question: { text: string; href: string } | null;
+  tasks: { late: number; today: number; href: string } | null;
+  appts: { title: string; at: string; href: string }[];
+  tools: { label: string; why: string; href: string }[];
+}
+export interface AuraRow { k: 'late' | 'task' | 'appt' | 'tool'; t: string; sub: string; u: string; at: number }
+export interface AuraProps extends BaseProps {
+  kind: '' | 'step' | 'ask'; head: string; body: string; cta: string; ctaU: string; rows: AuraRow[]; n: number;
+  l: { step: string; ask: string; prio: string; late: string; today: string; appt: string; none: string };
+}
+export function auraEntries(i: AuraInput | null, base: Omit<BaseProps, 's'>, ctx: { now: Date; discreet: boolean; lateN: (n: number) => string; todayN: (n: number) => string; askCta: string }, l: AuraProps['l']): Entry<AuraProps>[] {
+  const now = ctx.now; const t = now.getTime();
+  const empty: AuraProps = { ...base, s: 'empty', kind: '', head: '', body: '', cta: '', ctaU: '', rows: [], n: 0, l };
+  if (!i) return [{ date: now, props: empty }];
+  const endToday = startOfDay(now).getTime() + DAY;
+  const appts = i.appts.map((a) => ({ ...a, ms: ms(a.at) })).filter((a) => Number.isFinite(a.ms) && a.ms > t && a.ms < endToday).sort((a, b) => a.ms - b.ms);
+  const build = (from: number): AuraProps => {
+    const rows: AuraRow[] = [];
+    if (i.tasks && i.tasks.late > 0) rows.push({ k: 'late', t: ctx.lateN(i.tasks.late), sub: '', u: i.tasks.href, at: 0 });
+    for (const a of appts.filter((x) => x.ms > from).slice(0, 2)) rows.push({ k: 'appt', t: ctx.discreet ? l.appt : a.title, sub: '', u: a.href, at: a.ms });
+    if (i.tasks && i.tasks.today > 0) rows.push({ k: 'task', t: ctx.todayN(i.tasks.today), sub: '', u: i.tasks.href, at: 0 });
+    for (const x of i.tools) { if (rows.length >= 4) break; rows.push({ k: 'tool', t: x.label, sub: x.why, u: x.href, at: 0 }); }
+    const step = i.step; const q = i.question;
+    const head = step ? { kind: 'step' as const, head: l.step, body: step.title, cta: step.cta, ctaU: step.href }
+      : q ? { kind: 'ask' as const, head: l.ask, body: q.text, cta: ctx.askCta, ctaU: q.href }
+        : { kind: '' as const, head: '', body: '', cta: '', ctaU: '' };
+    const has = !!head.kind || rows.length > 0;
+    return { ...empty, ...head, s: has ? 'ok' : 'empty', rows, n: rows.filter((r) => r.k !== 'tool').length };
+  };
+  // Un rendez-vous du jour quitte les priorités à son heure, sans ouvrir l'app ; à minuit, plus de rendez-vous « du jour »
+  const out: Entry<AuraProps>[] = [{ date: now, props: build(t) }];
+  for (const a of appts.slice(0, 3)) out.push({ date: new Date(a.ms + 60_000), props: build(a.ms + 60_000) });
+  return out;
+}
+
+// ---------------------------------------------------------------- Relais (qui est de garde, prochain relais)
+export interface ShiftLike { user_id: string; starts_at: string; ends_at: string; status: string }
+export interface RelayRow { who: string; mine: boolean; at: number; end: number }
+export interface RelayProps extends BaseProps {
+  name: string;
+  nowWho: string; nowMine: boolean; nowEnd: number; nowStart: number;
+  nextWho: string; nextMine: boolean; nextAt: number; nextEnd: number;
+  sentAt: number; sentN: number; rows: RelayRow[]; mine7: number; other7: number;
+  l: { now: string; nobody: string; next: string; until: string; sent: string; events: string; week: string; mine: string; other: string; none: string };
+}
+export function relayEntries(i: { shifts: readonly ShiftLike[]; me: string | null; nameOf: (id: string) => string; lastSent: { at: string; count: number } | null; childName: string | null } | null,
+  base: Omit<BaseProps, 's'>, ctx: { now: Date; discreet: boolean; you: string; coparent: string; fallbackName: string }, l: RelayProps['l']): Entry<RelayProps>[] {
+  const now = ctx.now; const t = now.getTime();
+  const empty: RelayProps = { ...base, s: 'empty', name: ctx.fallbackName, nowWho: '', nowMine: false, nowEnd: 0, nowStart: 0, nextWho: '', nextMine: false, nextAt: 0, nextEnd: 0, sentAt: 0, sentN: 0, rows: [], mine7: 0, other7: 0, l };
+  if (!i) return [{ date: now, props: empty }];
+  const who = (id: string) => (i.me && id === i.me ? ctx.you : ctx.discreet ? ctx.coparent : i.nameOf(id));
+  const live = i.shifts.filter((s) => s.status !== 'cancelled').map((s) => ({ ...s, a: ms(s.starts_at), b: ms(s.ends_at) }))
+    .filter((s) => Number.isFinite(s.a) && Number.isFinite(s.b) && s.b > s.a && s.b > t).sort((x, y) => x.a - y.a);
+  const sent = i.lastSent ? ms(i.lastSent.at) : NaN;
+  const name = ctx.discreet || !i.childName ? ctx.fallbackName : i.childName;
+  const build = (from: number): RelayProps => {
+    const cur = live.find((s) => s.a <= from && s.b > from);
+    const nxt = live.find((s) => s.a > from);
+    const week = live.filter((s) => s.b > from && s.a < from + 7 * DAY);
+    const has = !!cur || !!nxt || Number.isFinite(sent);
+    return {
+      ...empty, s: has ? 'ok' : 'empty', name,
+      nowWho: cur ? who(cur.user_id) : '', nowMine: !!cur && cur.user_id === i.me, nowEnd: cur ? cur.b : 0, nowStart: cur ? cur.a : 0,
+      nextWho: nxt ? who(nxt.user_id) : '', nextMine: !!nxt && nxt.user_id === i.me, nextAt: nxt ? nxt.a : 0, nextEnd: nxt ? nxt.b : 0,
+      sentAt: Number.isFinite(sent) && sent <= from ? sent : 0, sentN: Number.isFinite(sent) ? i.lastSent!.count : 0,
+      rows: live.filter((s) => s.b > from).slice(0, 5).map((s) => ({ who: who(s.user_id), mine: s.user_id === i.me, at: s.a, end: s.b })),
+      mine7: week.filter((s) => s.user_id === i.me).length, other7: week.filter((s) => s.user_id !== i.me).length,
+    };
+  };
+  // Une entrée à chaque début et fin de garde : « qui est de garde » change à l'heure, sans ouvrir l'app
+  const marks = [...new Set(live.flatMap((s) => [s.a, s.b]).filter((x) => x > t))].sort((a, b) => a - b).slice(0, 10);
+  return [{ date: now, props: build(t) }, ...marks.map((m) => ({ date: new Date(m), props: build(m) }))];
+}
+
+// ---------------------------------------------------------------- Santé (vaccin, rendez-vous, prochaine prise)
+/**
+ * Données de santé : discrètes par défaut. Le nom du médicament n'entre JAMAIS dans le widget (heure seulement) ;
+ * le nom du vaccin et l'intitulé du rendez-vous seulement en mode détaillé et hors mode discret.
+ */
+export interface HealthInput {
+  childName: string | null;
+  vaccine: { date: string; label: string; due: boolean } | null;
+  appts: { at: string; title: string }[];
+  /** Prises enregistrées (traitements saisis par le parent), sans nom : heure prévue et prise notée ou non. */
+  doses: { at: string; done: boolean }[];
+}
+export interface HealthProps extends BaseProps {
+  name: string; detailed: boolean;
+  vacAt: number; vacT: string; vacDue: boolean;
+  apptAt: number; apptT: string;
+  doseAt: number; doseDone: number; doseTotal: number;
+  l: { vaccine: string; due: string; appt: string; dose: string; doses: string; none: string; allDone: string };
+}
+export function healthEntries(i: HealthInput | null, base: Omit<BaseProps, 's'>, ctx: { now: Date; discreet: boolean; detailed: boolean; fallbackName: string }, l: HealthProps['l']): Entry<HealthProps>[] {
+  const now = ctx.now; const t = now.getTime();
+  const empty: HealthProps = { ...base, s: 'empty', name: ctx.fallbackName, detailed: ctx.detailed, vacAt: 0, vacT: '', vacDue: false, apptAt: 0, apptT: '', doseAt: 0, doseDone: 0, doseTotal: 0, l };
+  if (!i) return [{ date: now, props: empty }];
+  const show = ctx.detailed && !ctx.discreet;
+  const appts = i.appts.map((a) => ({ ...a, ms: ms(a.at) })).filter((a) => Number.isFinite(a.ms) && a.ms > t).sort((a, b) => a.ms - b.ms);
+  const doses = i.doses.map((d) => ({ ...d, ms: ms(d.at) })).filter((d) => Number.isFinite(d.ms)).sort((a, b) => a.ms - b.ms);
+  const vac = i.vaccine ? localMidnight(i.vaccine.date).getTime() : 0;
+  const build = (from: number): HealthProps => {
+    const day0 = startOfDay(new Date(from)).getTime();
+    const today = doses.filter((d) => d.ms >= day0 && d.ms < day0 + DAY);
+    const nextDose = doses.find((d) => !d.done && d.ms > from);
+    const appt = appts.find((a) => a.ms > from);
+    const has = !!i.vaccine || !!appt || doses.some((d) => d.ms > from || (d.ms >= day0 && d.ms < day0 + DAY));
+    return {
+      ...empty, s: has ? 'ok' : 'empty',
+      name: ctx.discreet || !i.childName ? ctx.fallbackName : i.childName,
+      vacAt: vac, vacT: i.vaccine && show ? i.vaccine.label : i.vaccine ? l.vaccine : '', vacDue: !!i.vaccine?.due || (vac > 0 && vac <= from),
+      apptAt: appt ? appt.ms : 0, apptT: appt ? (show ? appt.title : l.appt) : '',
+      doseAt: nextDose ? nextDose.ms : 0, doseDone: today.filter((d) => d.done).length, doseTotal: today.length,
+    };
+  };
+  const out: Entry<HealthProps>[] = [{ date: now, props: build(t) }];
+  // À l'heure d'une prise ou d'un rendez-vous, le widget passe au suivant ; à minuit, les prises du jour repartent
+  const marks = [...new Set([...doses.filter((d) => !d.done && d.ms > t).map((d) => d.ms + 60_000), ...appts.slice(0, 3).map((a) => a.ms + 60_000), startOfDay(now).getTime() + DAY])]
+    .filter((x) => x > t).sort((a, b) => a - b).slice(0, 10);
+  for (const m of marks) out.push({ date: new Date(m), props: build(m) });
+  return out;
+}
+
+// ---------------------------------------------------------------- Mon histoire (photo souvenir, âge exact, souvenir de la semaine)
+export interface StoryPageLike { date: string; title: string | null; text: string | null }
+export interface StoryProps extends BaseProps {
+  name: string; age: string; photo: string; photoAt: number; caption: string;
+  memT: string; memWhen: string; memAt: number; total: number; week: number;
+  l: { age: string; memory: string; thisWeek: string; yearsAgo: string; memories: string; none: string; photo: string };
+}
+/**
+ * Souvenir de la semaine : une page notée la même semaine une année précédente (« il y a 1 an »), sinon la plus récente
+ * des 7 derniers jours. Sans photo prête (aucune, téléchargement impossible) : pas d'image, jamais d'image d'exemple.
+ */
+export function storyEntries(i: { childName: string | null; birth: string; photo: { file: string; taken_on: string; caption: string | null } | null; pages: readonly StoryPageLike[] } | null,
+  base: Omit<BaseProps, 's'>, ctx: { now: Date; discreet: boolean; ageText: (birthISO: string, dayISO: string) => string; yearsAgo: (n: number) => string; fallbackName: string }, l: StoryProps['l']): Entry<StoryProps>[] {
+  const now = ctx.now;
+  const empty: StoryProps = { ...base, s: 'empty', name: ctx.fallbackName, age: '', photo: '', photoAt: 0, caption: '', memT: '', memWhen: '', memAt: 0, total: 0, week: 0, l };
+  if (!i || !i.birth) return [{ date: now, props: empty }];
+  const pages = i.pages.filter((p) => !!p.date && (p.title || p.text));
+  const build = (day: string): StoryProps => {
+    const [y] = day.split('-').map(Number);
+    let mem: { p: StoryPageLike; when: string } | null = null;
+    for (let k = 1; k <= 10 && !mem; k++) {
+      const from = addDays(`${y - k}${day.slice(4)}`, -3); const to = addDays(`${y - k}${day.slice(4)}`, 3);
+      const hit = pages.filter((p) => p.date >= from && p.date <= to && p.date >= i.birth).sort((a, b) => b.date.localeCompare(a.date))[0];
+      if (hit) mem = { p: hit, when: ctx.yearsAgo(k) };
+    }
+    const recent = pages.filter((p) => p.date <= day && p.date > addDays(day, -7)).sort((a, b) => b.date.localeCompare(a.date));
+    if (!mem && recent[0]) mem = { p: recent[0], when: l.thisWeek };
+    const photo = !ctx.discreet && i.photo ? i.photo : null;
+    return {
+      ...empty, s: 'ok', name: ctx.discreet || !i.childName ? ctx.fallbackName : i.childName,
+      age: day >= i.birth ? ctx.ageText(i.birth, day) : '',
+      photo: photo?.file ?? '', photoAt: photo ? localMidnight(photo.taken_on).getTime() : 0, caption: photo?.caption?.trim() ?? '',
+      memT: mem && !ctx.discreet ? (mem.p.title || mem.p.text || '') : '', memWhen: mem ? mem.when : '', memAt: mem ? localMidnight(mem.p.date).getTime() : 0,
+      total: pages.length, week: recent.length,
+    };
+  };
+  // L'âge et le souvenir de la semaine avancent seuls chaque jour à minuit (7 jours d'avance)
+  const today = todayISO(now);
+  const out: Entry<StoryProps>[] = [{ date: now, props: build(today) }];
+  for (let k = 1; k <= 7; k++) { const iso = addDays(today, k); out.push({ date: localMidnight(iso), props: build(iso) }); }
+  return out;
 }
 
 /** Contenu affiché quand personne n'est connecté (déconnexion, changement de compte) : aucune donnée. */
