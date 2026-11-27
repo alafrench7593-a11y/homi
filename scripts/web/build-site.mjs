@@ -256,6 +256,48 @@ const hubPaths = [];
     writeFileSync(path.join(dist, u.slug, 'index.html'), html);
     hubPaths.push(`/${u.slug}`);
   }
+  // outils gratuits (/outils/…) : fonctionnent sans HOMI, calcul local, contenus repris de l'app quand ils existent
+  {
+    const { OUTILS, DOMAIN_LABELS } = await import(path.join(site, 'outils.mjs'));
+    const src = readFileSync(path.join(root, 'src/content/checklists.ts'), 'utf8');
+    const a0 = src.indexOf('const CHECKLIST_TEMPLATES_FR: Templates = ') + 'const CHECKLIST_TEMPLATES_FR: Templates = '.length;
+    const CL = Function(`return ${src.slice(a0, src.indexOf('\n};', a0) + 2)}`)();
+    const vous = (t) => t.replace(/si tu l’as/g, 'si vous l’avez').replace(/\btu\b/g, 'vous').replace(/\bton\b/g, 'votre').replace(/\bta\b/g, 'votre').replace(/\btes\b/g, 'vos');
+    cpSync(path.join(site, 'outils.css'), path.join(dist, 'site/outils.css')); cpSync(path.join(site, 'outils.js'), path.join(dist, 'site/outils.js'));
+    const withAssets = (h) => h.replace('</head>', `<link rel="stylesheet" href="/site/outils.css?v=${version}">\n</head>`).replace('</body>', `<script src="/site/outils.js?v=${version}" defer></script>\n</body>`);
+    for (const o of OUTILS) {
+      const url = `${siteUrl}/outils/${o.slug}`;
+      let widget = '';
+      if (o.kind === 'checklist') {
+        widget = `<div class="card tool-box" data-checklist><div class="tool-bar"><strong data-cl-progress aria-live="polite"></strong><button type="button" class="btn btn-secondary btn-sm" data-print>Imprimer</button><button type="button" class="btn btn-secondary btn-sm" data-cl-reset>Tout décocher</button></div>`
+          + o.lists.map((k) => { const l = CL[k]; if (!l) throw new Error(`outil ${o.slug} : liste inconnue ${k}`); return `<section class="cl-group"><h2>${esc(l.title)}</h2>${l.items.map((it, i) => `<label><input type="checkbox" id="cl-${k}-${i}"><span>${esc(vous(it))}</span></label>`).join('')}</section>`; }).join('') + `</div>`;
+      } else if (o.kind === 'mentalload') {
+        const opt = '<option value="">—</option><option value="me">Moi</option><option value="other">L’autre parent</option><option value="both">Les deux</option><option value="none">Personne / pas concerné</option>';
+        widget = `<form class="card tool-box" data-mentalload onsubmit="return false"><div class="ml-row ml-head"><span>Domaine</span><span>Qui y pense ?</span><span>Qui le fait ?</span></div>`
+          + Object.entries(DOMAIN_LABELS).map(([k, l]) => `<div class="ml-row" data-dom="${k}"><span>${esc(l)}</span><label class="ml-sel"><span>Qui y pense ?</span><select data-k="think" aria-label="${esc(l)} : qui y pense ?">${opt}</select></label><label class="ml-sel"><span>Qui le fait ?</span><select data-k="do" aria-label="${esc(l)} : qui le fait ?">${opt}</select></label></div>`).join('')
+          + `</form><div class="card ml-result" data-ml-result hidden aria-live="polite"><h2>Votre part</h2><div class="ml-meter"><span>Penser, anticiper : <b data-ml-think></b></span><div class="ml-track"><i data-ml-bar-think></i></div></div><div class="ml-meter"><span>Faire : <b data-ml-do></b></span><div class="ml-track"><i data-ml-bar-do></i></div></div><p data-ml-msg></p></div>`;
+      }
+      const jsonld = { '@context': 'https://schema.org', '@graph': [
+        { '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${siteUrl}/` }, { '@type': 'ListItem', position: 2, name: 'Outils gratuits', item: `${siteUrl}/outils` }, { '@type': 'ListItem', position: 3, name: o.name, item: url }] },
+        { '@type': 'WebApplication', name: o.name, url, description: o.desc, applicationCategory: 'LifestyleApplication', operatingSystem: 'Web', isAccessibleForFree: true, offers: { '@type': 'Offer', price: '0', priceCurrency: 'EUR' } },
+        { '@type': 'FAQPage', mainEntity: o.faq.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) },
+      ] };
+      const content = `<section class="chapter tight"><div class="wrap narrow"><nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a> <span aria-hidden="true">›</span> <a href="/outils">Outils gratuits</a> <span aria-hidden="true">›</span> <span>${esc(o.name)}</span></nav>`
+        + `<p class="eyebrow">Outil gratuit · sans inscription</p><h1 class="display">${esc(o.h1)}</h1><p class="lead">${esc(o.lead)}</p>${widget}`
+        + `<aside class="card post-tool tool-more"><p class="eyebrow">Aller plus loin avec HOMI</p><p>${esc(o.homi[1])}</p><a class="btn btn-primary btn-sm" href="/${o.homi[0]}">Découvrir</a></aside>`
+        + `<h2 class="h2" style="margin-top:40px">Questions fréquentes</h2>${o.faq.map(([q, a]) => `<details class="card aura-faq" open><summary>${esc(q)}</summary><p>${esc(a)}</p></details>`).join('')}</div></section>`;
+      const html = withAssets(tpl.replace('{{TITLE}}', () => esc(o.title)).replaceAll('{{DESC}}', () => esc(o.desc)).replaceAll('{{NAME}}', () => esc(o.name)).replaceAll('{{CANONICAL}}', url)
+        .replace('{{JSONLD}}', () => JSON.stringify(jsonld).replace(/</g, '\\u003c')).replace('{{CONTENT}}', () => content));
+      mkdirSync(path.join(dist, 'outils', o.slug), { recursive: true });
+      writeFileSync(path.join(dist, 'outils', o.slug, 'index.html'), html);
+      hubPaths.push(`/outils/${o.slug}`);
+    }
+    const idx = `<section class="chapter tight"><div class="wrap narrow"><nav class="crumbs" aria-label="Fil d’Ariane"><a href="/">Accueil</a> <span aria-hidden="true">›</span> <span>Outils gratuits</span></nav><h1 class="display">Outils gratuits pour les parents</h1><p class="lead">Utiles tout de suite, sans inscription. Rien de ce que vous saisissez n’est envoyé.</p><ul class="u-tools">${OUTILS.map((o) => `<li><strong><a href="/outils/${o.slug}">${esc(o.name)}</a></strong><span>${esc(o.desc)}</span></li>`).join('')}</ul></div></section>`;
+    mkdirSync(path.join(dist, 'outils'), { recursive: true });
+    writeFileSync(path.join(dist, 'outils', 'index.html'), withAssets(tpl.replace('{{TITLE}}', 'Outils gratuits pour les parents | HOMI').replaceAll('{{DESC}}', 'Checklist naissance, test de répartition de la charge mentale : des outils gratuits, sans inscription, calcul local.').replaceAll('{{NAME}}', 'Outils gratuits').replaceAll('{{CANONICAL}}', `${siteUrl}/outils`)
+      .replace('{{JSONLD}}', () => JSON.stringify({ '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Accueil', item: `${siteUrl}/` }, { '@type': 'ListItem', position: 2, name: 'Outils gratuits', item: `${siteUrl}/outils` }] })).replace('{{CONTENT}}', () => idx)));
+    hubPaths.push('/outils');
+  }
   console.log(`pages piliers : ${hubPaths.join(', ')}`);
 }
 
