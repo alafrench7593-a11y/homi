@@ -73,6 +73,18 @@ interface UiState {
   /** Widget iOS du cycle : contenu détaillé (sinon discret). Réglage propre à cet appareil. */
   cycleWidgetDetailed: boolean;
   setCycleWidgetDetailed: (v: boolean) => void;
+  /** Widgets iOS : masquer prénoms et intitulés (tâches, rendez-vous). Réglage propre à cet appareil. */
+  widgetsPrivate: boolean;
+  setWidgetsPrivate: (v: boolean) => void;
+  /** Live Activities iOS (écran verrouillé, Dynamic Island) pendant un suivi en cours. Réglage propre à cet appareil. */
+  liveActivitiesEnabled: boolean;
+  setLiveActivitiesEnabled: (v: boolean) => void;
+  /** Chrono de séance de tire-lait lancé sur cet appareil (la table ne garde pas de durée) ; null sinon. */
+  pumpRun: { childId: string; since: number } | null;
+  setPumpRun: (v: { childId: string; since: number } | null) => void;
+  /** Widgets iOS : enfant affiché par les widgets (réglage de cet appareil) ; null = celui de l'accueil. */
+  widgetChildId: string | null;
+  setWidgetChildId: (id: string | null) => void;
   /** Mode simple (par défaut) : l'essentiel seulement ; les fonctions avancées apparaissent si on le désactive. */
   simpleMode: boolean;
   setSimpleMode: (on: boolean) => void;
@@ -228,6 +240,10 @@ export const useUiStore = create<UiState>()(
       subject: null,
       hapticsEnabled: true,
       cycleWidgetDetailed: false,
+      widgetsPrivate: false,
+      liveActivitiesEnabled: true,
+      pumpRun: null,
+      widgetChildId: null,
       simpleMode: true,
       setSimpleMode: (simpleMode) => set({ simpleMode }),
       focusPicks: { day: '', ids: [] },
@@ -305,13 +321,17 @@ export const useUiStore = create<UiState>()(
       setSubject: (subject) => set({ subject }),
       setHaptics: (hapticsEnabled) => set({ hapticsEnabled }),
       setCycleWidgetDetailed: (cycleWidgetDetailed) => set({ cycleWidgetDetailed }),
-      reset: () => set({ householdId: null, knownHouseholds: [], subject: null, nightMode: false }),
+      setWidgetsPrivate: (widgetsPrivate) => set({ widgetsPrivate }),
+      setLiveActivitiesEnabled: (liveActivitiesEnabled) => set({ liveActivitiesEnabled }),
+      setPumpRun: (pumpRun) => set({ pumpRun }),
+      reset: () => set({ householdId: null, knownHouseholds: [], subject: null, nightMode: false, pumpRun: null }),
+      setWidgetChildId: (widgetChildId) => set({ widgetChildId }),
       resetAccount: () => set({
-        householdId: null, knownHouseholds: [], subject: null, nightMode: false, homeChildId: null,
+        householdId: null, knownHouseholds: [], subject: null, nightMode: false, homeChildId: null, widgetChildId: null,
         quickActionFavorites: {}, quickShortcuts: null, cocoonFavorites: null, dailyActionFavorites: null,
         growQuestions: null, nightQuestions: {}, nearbyTown: null, cycleCardItems: null, cycleCardShortcuts: null,
         adviceSeen: [], toolFavorites: [], toolPinned: [], toolHidden: [], pantry: [], pantryMigrated: [], toolFilter: '',
-        homeLayouts: {},
+        homeLayouts: {}, pumpRun: null,
       }),
     }),
     {

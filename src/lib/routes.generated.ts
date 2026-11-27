@@ -298,6 +298,7 @@ export const APP_ROUTES: readonly string[] = [
   '/settings/services',
   '/settings/subscription',
   '/settings/sync',
+  '/settings/widgets',
   '/sleep/[childId]',
   '/sleep/difficult/[childId]',
   '/sleep/help/[childId]',

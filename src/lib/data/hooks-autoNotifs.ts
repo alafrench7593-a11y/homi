@@ -13,14 +13,10 @@ import { DEFAULT_AUTO_PREFS, planAutoNotifications, serverNotificationSettings, 
 import { upcomingPrep } from '../domain/mentalLoad';
 import { remindersOn } from '../domain/myDay';
 import { useDoseLogsSince } from './hooks-myTreatments';
-import { useBottleTimers } from './hooks-bottle';
 import { insertOrQueue, useOfflineStore } from '../offline';
-import { babyWidgetContent } from '@/widgets/babyWidgetContent';
-import { BRAND } from '@/config/brand';
-import { syncBabyWidget } from '@/widgets/syncBabyWidget';
 import { addDays, todayISO } from '../domain/dates';
 import { getAutoPrefs, setAutoPrefs, syncAutoNotifications } from '../notifications';
-import { formatTime, t as tr, type TKey } from '@/i18n';
+import { t as tr, type TKey } from '@/i18n';
 
 export function useAutoPrefs() {
   return useQuery({ queryKey: ['auto-notif-prefs'], queryFn: getAutoPrefs, staleTime: Infinity, placeholderData: DEFAULT_AUTO_PREFS });
@@ -98,24 +94,6 @@ export function useAutoNotificationsSync() {
   const key = plans ? JSON.stringify(plans.map((p) => [p.id, p.at.toISOString(), p.title])) : null;
   useEffect(() => { if (plans) void syncAutoNotifications(plans).catch(() => undefined); }, [key]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Widget « Bébé » (iOS) : heures du prochain biberon et de la prochaine prise ; discret sauf choix contraire
-  const timers = useBottleTimers().data;
-  const widget = useMemo(() => {
-    if (!prefs) return null;
-    const names = new Map((children ?? []).map((c) => [c.id, c.first_name]));
-    const medRems = (reminders ?? []).filter((r) => (r.treatment_id || r.my_treatment_id) && (!me || r.user_id === me));
-    const doses = [today, addDays(today, 1)].flatMap((day) => remindersOn(medRems as never, day).filter((it) => it.time && !it.every).map((it) => {
-      const r = medRems.find((x) => x.id === it.refId)!;
-      return { at: atLocal(day, it.time!), who: r.child_id ? names.get(r.child_id) ?? '' : tr('med.me') };
-    }));
-    return babyWidgetContent({
-      detailed: prefs.widgetDetails, now: new Date(),
-      bottles: (timers ?? []).map((t) => ({ due_at: t.due_at, childName: names.get(t.child_id) ?? '' })),
-      doses, fmt: (d) => formatTime(d),
-    }, { appName: BRAND.name, open: tr('c3.widget.open'), bottle: (time, name) => tr('wb.bottle', { time, name }), dose: (time, who) => tr('wb.dose', { time, who }), nothing: tr('wb.nothing') });
-  }, [prefs, children, reminders, timers, today, me]);
-  const wkey = widget ? JSON.stringify(widget) : null;
-  useEffect(() => { if (widget) void syncBabyWidget(widget); }, [wkey]); // eslint-disable-line react-hooks/exhaustive-deps
   return plans;
 }
 

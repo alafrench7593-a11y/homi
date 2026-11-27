@@ -25,6 +25,7 @@ export default function NotificationSettings() {
   const { data } = useAutoPrefs();
   const save = useSaveAutoPrefs();
   const prefs = data ?? DEFAULT_AUTO_PREFS;
+  // Live Activities iOS : activées par défaut, réglage propre à cet appareil
   const plans = useAutoNotificationsSync() ?? [];
   const [perm, setPerm] = useState<PermissionState>('undetermined');
   const [bottle, setBottle] = useState(true);
@@ -68,10 +69,9 @@ export default function NotificationSettings() {
         <ToggleRow label={tr('ms.weeklyPref')} hint={tr('ms.weeklyPrefD')} value={prefs.weeklyMood} onChange={(v) => set({ weeklyMood: v })} />
       </Card>
 
-      <SectionTitle title={tr('wb.title')} />
+      <SectionTitle title={tr('wg.set.title')} />
       <Card testID="nt-widget">
-        <ToggleRow label={tr('wb.pref')} hint={tr('wb.prefD')} value={prefs.widgetDetails} onChange={(v) => set({ widgetDetails: v })} />
-        <Text variant="caption" muted style={{ marginTop: spacing.xs }}>{tr('wb.howto')}</Text>
+        <ListRow icon="grid" title={tr('wg.page.row')} subtitle={tr('wg.page.rowD')} onPress={() => router.push('/settings/widgets' as never)} testID="nt-widgets-page" />
       </Card>
 
       <SectionTitle title={tr('nt.quietTitle')} />
@@ -106,3 +106,4 @@ export default function NotificationSettings() {
     </Screen>
   );
 }
+

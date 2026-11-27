@@ -28,6 +28,18 @@ const RGBA = /rgba?\(/g;
 const ALLOW: Record<string, string> = {
   // code repris (licence MIT) : palettes par défaut jamais utilisées, HOMI passe toujours sa palette de thème
   'components/reacticx/tray/const.ts': 'palettes par défaut de Reacticx (Tray), remplacées par le thème HOMI',
+  // widgets iOS : le moteur du widget n'a accès à aucune variable extérieure (ni thème ni jetons), palette locale obligatoire
+  'widgets/BabyWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/SleepWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/CycleWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/PregnancyWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/TasksWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/PlanningWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'live/LiveActivities.tsx': 'Live Activities iOS (vue du moteur expo-widgets : palette locale, aucun accès aux jetons)',
+  'widgets/AuraWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/RelayWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/HealthWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
+  'widgets/StoryWidget.tsx': 'widget iOS (palette locale, aucun accès aux jetons)',
   // illustrations et logo
   'components/Illustrations.tsx': 'illustrations vectorielles',
   'components/FetusArt.tsx': 'illustration du fœtus',

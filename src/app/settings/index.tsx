@@ -124,6 +124,7 @@ export default function SettingsScreen() {
         <Divider />
         <Divider />
         <ListRow icon="bell" title={tr('nt.settingsRow')} subtitle={tr('nt.settingsRowD')} onPress={() => router.push('/settings/notifications')} testID="settings-notifs" />
+        <ListRow icon="grid" title={tr('wg.page.row')} subtitle={tr('wg.page.rowD')} onPress={() => router.push('/settings/widgets' as never)} testID="settings-widgets" />
         <ListRow icon="bell" title={tr('settings.reminders')} subtitle={activeReminders ? tr('settings.reminders.active', { count: activeReminders }) : tr('settings.reminders.none')} onPress={() => router.push('/settings/reminders')} />
         {iphoneCalendar.visible ? <ListRow icon="calendar" title={tr('ical.title')} subtitle={iphoneCalendar.text} onPress={() => router.push(DEVICE_CALENDAR_ROUTE as never)} testID="settings-iphone-calendar" /> : null}
         <Divider />
