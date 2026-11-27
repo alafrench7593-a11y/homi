@@ -72,6 +72,11 @@ function load(name: WidgetName): Updatable | null {
   return null;
 }
 
+/** Enregistre la mise en page des six widgets dès l'ouverture de l'app (sinon iOS n'a rien à dessiner). */
+export function registerWidgets(): void {
+  for (const name of WIDGET_NAMES) load(name);
+}
+
 export function pushWidget<P extends object>(name: WidgetName, entries: Entry<P>[]): boolean {
   if (!entries.length) return false;
   const lg = logo();

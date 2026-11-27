@@ -3,8 +3,8 @@
  * rendez-vous aujourd'hui et sur 7 jours, et la liste des suivants. Un rendez-vous passé disparaît à son heure
  * (frise d'entrées). Intitulés et lieux masqués en mode discret ; textes marqués sensibles.
  */
-import { HStack, Image, Spacer, Text, VStack } from '@expo/ui/swift-ui';
-import { containerBackground, cornerRadius, font, foregroundStyle, frame, lineLimit, minimumScaleFactor, monospacedDigit, privacySensitive, resizable, widgetURL } from '@expo/ui/swift-ui/modifiers';
+import { HStack, Image, Link, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { background, containerBackground, cornerRadius, font, foregroundStyle, frame, lineLimit, minimumScaleFactor, monospacedDigit, padding, privacySensitive, resizable, shapes, widgetURL } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 import type { PlanningProps } from './model';
 
@@ -15,8 +15,10 @@ const PlanningWidgetView = (props: PlanningProps, env: WidgetEnvironment) => {
   const C = { bg: dark ? '#0F1319' : '#F4F7FB', text: dark ? '#EAF0F8' : '#16202E', muted: dark ? '#A3B0C2' : '#4E5C70', accent: full ? (dark ? '#8DB8F2' : '#2558A6') : (dark ? '#EAF0F8' : '#16202E') };
   const fam = env.widgetFamily;
   const l = props.l || {};
+  const acts = (props.actions || []).slice(0, 2);
+  const actionsEl = acts.length && fam !== 'systemSmall' && fam !== 'accessoryRectangular' ? <HStack spacing={6}>{acts.map((a, i) => <Link key={String(i)} destination={a.u}><Text modifiers={[font({ textStyle: 'caption', weight: 'semibold' }), foregroundStyle(full ? C.bg : C.text), lineLimit(1), padding({ horizontal: 10, vertical: 5 }), background(full ? C.accent : { type: 'hierarchical', style: 'quaternary' }, shapes.capsule())]}>{a.t}</Text></Link>)}</HStack> : null;
   const logoEl = props.logo && full ? <Image uiImage={props.logo} modifiers={[resizable(), frame({ width: 16, height: 16 }), cornerRadius(4)]} /> : null;
-  const brand = <HStack spacing={5}>{logoEl}<Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title || 'HOMI'}</Text><Spacer /></HStack>;
+  const brand = <HStack spacing={5}>{logoEl}<Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title || 'HOMI'}</Text><Spacer />{actionsEl}</HStack>;
   const root = [containerBackground(C.bg, 'widget'), widgetURL(props.url || 'homi://')];
   const rows = props.rows || [];
   const label = (s: string) => <Text modifiers={[font({ textStyle: 'caption2', weight: 'semibold' }), foregroundStyle(C.muted), lineLimit(1)]}>{s}</Text>;

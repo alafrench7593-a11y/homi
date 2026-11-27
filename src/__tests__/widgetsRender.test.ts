@@ -20,10 +20,11 @@ function exportedNames(): Set<string> {
   const scan = (file: string) => { for (const m of fs.readFileSync(file, 'utf8').matchAll(/export declare (?:function|const) (\w+)/g)) names.add(m[1]); };
   for (const dir of fs.readdirSync(UI)) if (fs.existsSync(`${UI}/${dir}/index.d.ts`)) scan(`${UI}/${dir}/index.d.ts`);
   for (const f of fs.readdirSync(`${UI}/modifiers`)) if (f.endsWith('.d.ts')) scan(`${UI}/modifiers/${f}`);
+  scan(`${UI}/modifiers/shapes/index.d.ts`);
   return names;
 }
 const EXPORTED = exportedNames();
-const USED = ['Image', 'resizable', 'cornerRadius', 'Chart', 'Gauge', 'HStack', 'VStack', 'Spacer', 'Text', 'ProgressView', 'containerBackground', 'font', 'foregroundStyle', 'frame', 'gaugeStyle', 'lineLimit', 'minimumScaleFactor', 'monospacedDigit', 'privacySensitive', 'tint', 'widgetURL'];
+const USED = ['Link', 'background', 'padding', 'shapes', 'Image', 'resizable', 'cornerRadius', 'Chart', 'Gauge', 'HStack', 'VStack', 'Spacer', 'Text', 'ProgressView', 'containerBackground', 'font', 'foregroundStyle', 'frame', 'gaugeStyle', 'lineLimit', 'minimumScaleFactor', 'monospacedDigit', 'privacySensitive', 'tint', 'widgetURL'];
 
 type Node = { type: string; props: Record<string, unknown> };
 function engine(layout: string) {
@@ -87,6 +88,8 @@ describe('vues compilées des widgets', () => {
       expect(typeof layout).toBe('string');
       // Aucune importation résiduelle : le moteur du widget n'a que les globales d'@expo/ui
       expect(layout as string).not.toMatch(/require\(|_swiftUi|_modifiers|_interopRequire/);
+      // Les « slots » (currentValueLabel…) ne sont pas dessinés par le moteur des widgets en production
+      expect(layout as string).not.toMatch(/currentValueLabel|minimumValueLabel|maximumValueLabel/);
       const render = engine(layout as string);
       const states = [...(SAMPLES[name] ?? []), { ...base, s: 'out' }, { ...base, s: 'empty' }];
       for (const props of states) {

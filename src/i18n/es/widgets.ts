@@ -79,4 +79,13 @@ export const widgets = {
   'wg.diag.never': "aún no enviado",
   'wg.diag.sent': "enviado a las {time} ({state}) · {n} entrada(s) guardada(s)",
   'wg.diag.error': "error: {msg}",
+  'wg.act.bottle': "+ Biberón",
+  'wg.act.feed': "+ Toma",
+  'wg.act.nap': "+ Siesta",
+  'wg.act.wake': "Despertó",
+  'wg.act.cycle': "Anotar mi día",
+  'wg.act.preg': "Mi seguimiento",
+  'wg.act.note': "Anotar",
+  'wg.act.task': "+ Tarea",
+  'wg.act.appt': "+ Cita",
 };

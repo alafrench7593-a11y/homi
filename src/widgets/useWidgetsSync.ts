@@ -24,7 +24,7 @@ import { useUiStore } from '@/lib/store';
 import { useBackendMode } from '@/lib/demoMode';
 import type { Breastfeed, Sleep } from '@/lib/types';
 import { babyEntries, cycleEntries, planningEntries, pregnancyEntries, sleepEntries, tasksEntries } from './model';
-import { pushWidget, subscribeRefresh } from './push';
+import { pushWidget, registerWidgets, subscribeRefresh } from './push';
 
 const url = (path: string) => `${BRAND.scheme}://${path.replace(/^\//, '')}`;
 const dayLetter = (d: Date) => {
@@ -141,14 +141,28 @@ export function useWidgetsSync(): void {
     next: tr('wg.appt'), week: tr('wg.plan.week'), today: tr('wg.today'), none: tr('wg.none'), hidden: tr('wg.plan.hidden'), in: tr('wg.plan.in'),
   }), [appts.data, discreet, nowMin, isDemo]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Raccourcis d'ajout (moyen et grand formats) : ouvrent la saisie dans l'app (synchronisée avec le coparent)
+  const withActions = <T extends { props: object }>(list: T[], actions: { t: string; u: string }[]) => list.map((e) => ({ ...e, props: { ...e.props, actions } }));
+  const asleep = (sleep[0]?.props as { asleep?: boolean } | undefined)?.asleep;
+  const babyA = cid ? [{ t: tr('wg.act.bottle'), u: url(`/track/bottle?child=${cid}`) }, { t: tr('wg.act.feed'), u: url(`/track/breastfeed?child=${cid}`) }] : [];
+  const sleepA = cid ? [asleep ? { t: tr('wg.act.wake'), u: url(`/sleep/${cid}`) } : { t: tr('wg.act.nap'), u: url(`/track/sleep?child=${cid}`) }] : [];
+  const cycleA = [{ t: tr(detailed ? 'wg.act.cycle' : 'wg.act.note'), u: url('/cycle') }];
+  const pregA = [{ t: tr(detailed ? 'wg.act.preg' : 'wg.act.note'), u: url('/pregnancy') }];
+  const taskA = [{ t: tr('wg.act.task'), u: url('/family/missions/new') }];
+  const planA = [{ t: tr('wg.act.appt'), u: url('/calendar?new=1') }];
+
   // Envoi uniquement une fois les données chargées (jamais un faux « vide » pendant le chargement)
   const [tick, setTick] = useState(0);
+  useEffect(() => { registerWidgets(); }, []);
+  // Filet : si une donnée tarde (réseau lent, requête refusée), le widget reçoit quand même un contenu après 6 s
+  const [late, setLate] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setLate(true), 6000); return () => clearTimeout(t); }, []);
   useEffect(() => subscribeRefresh(() => setTick((n) => n + 1)), []);
   const ready = !!me;
-  useEffect(() => { if (ready && (!cid || (bottles.data && feeds.data))) pushWidget('BabyWidget', baby); }, [ready, baby, tick]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (ready && (!cid || sleeps.data)) pushWidget('SleepWidget', sleep); }, [ready, sleep, tick]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (ready && periods.data) pushWidget('CycleWidget', cycle); }, [ready, cycle, tick]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (ready && appts.data) pushWidget('PregnancyWidget', preg); }, [ready, preg, tick]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (ready && tasks.data) pushWidget('TasksWidget', fam); }, [ready, fam, tick]); // eslint-disable-line react-hooks/exhaustive-deps
-  useEffect(() => { if (ready && appts.data) pushWidget('PlanningWidget', plan); }, [ready, plan, tick]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && (late || !cid || (bottles.data && feeds.data))) pushWidget('BabyWidget', withActions(baby, babyA)); }, [ready, baby, tick, late]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && (late || !cid || sleeps.data)) pushWidget('SleepWidget', withActions(sleep, sleepA)); }, [ready, sleep, tick, late]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && (late || periods.data)) pushWidget('CycleWidget', withActions(cycle, cycleA)); }, [ready, cycle, tick, late]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && (late || appts.data)) pushWidget('PregnancyWidget', withActions(preg, pregA)); }, [ready, preg, tick, late]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && (late || tasks.data)) pushWidget('TasksWidget', withActions(fam, taskA)); }, [ready, fam, tick, late]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (ready && (late || appts.data)) pushWidget('PlanningWidget', withActions(plan, planA)); }, [ready, plan, tick, late]); // eslint-disable-line react-hooks/exhaustive-deps
 }

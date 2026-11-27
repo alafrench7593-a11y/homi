@@ -4,8 +4,8 @@
  * Contenu calculé par l'app (model.ts → babyEntries) à partir des vraies saisies ; prénom masqué en mode discret.
  * Règles du moteur de widget : pas de hook, pas d'état, aucune variable extérieure — tout passe par les props.
  */
-import { Chart, HStack, Image, Spacer, Text, VStack } from '@expo/ui/swift-ui';
-import { containerBackground, cornerRadius, font, foregroundStyle, frame, lineLimit, minimumScaleFactor, monospacedDigit, privacySensitive, resizable, widgetURL } from '@expo/ui/swift-ui/modifiers';
+import { Chart, HStack, Image, Link, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { background, containerBackground, cornerRadius, font, foregroundStyle, frame, lineLimit, minimumScaleFactor, monospacedDigit, padding, privacySensitive, resizable, shapes, widgetURL } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 import type { BabyProps } from './model';
 
@@ -16,8 +16,10 @@ const BabyWidgetView = (props: BabyProps, env: WidgetEnvironment) => {
   const C = { bg: dark ? '#141416' : '#FBF8F3', text: dark ? '#F4EFE8' : '#1F1B1A', muted: dark ? '#B3ABA4' : '#5F5751', accent: full ? (dark ? '#8FB3DC' : '#2F5F93') : (dark ? '#F4EFE8' : '#1F1B1A') };
   const fam = env.widgetFamily;
   const l = props.l || {};
+  const acts = (props.actions || []).slice(0, 2);
+  const actionsEl = acts.length && fam !== 'systemSmall' && fam !== 'accessoryRectangular' ? <HStack spacing={6}>{acts.map((a, i) => <Link key={String(i)} destination={a.u}><Text modifiers={[font({ textStyle: 'caption', weight: 'semibold' }), foregroundStyle(full ? C.bg : C.text), lineLimit(1), padding({ horizontal: 10, vertical: 5 }), background(full ? C.accent : { type: 'hierarchical', style: 'quaternary' }, shapes.capsule())]}>{a.t}</Text></Link>)}</HStack> : null;
   const logoEl = props.logo && full ? <Image uiImage={props.logo} modifiers={[resizable(), frame({ width: 16, height: 16 }), cornerRadius(4)]} /> : null;
-  const brand = <HStack spacing={5}>{logoEl}<Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title || 'HOMI'}</Text><Spacer /></HStack>;
+  const brand = <HStack spacing={5}>{logoEl}<Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title || 'HOMI'}</Text><Spacer />{actionsEl}</HStack>;
   const root = [containerBackground(C.bg, 'widget'), widgetURL(props.url || 'homi://')];
   const label = (s: string) => <Text modifiers={[font({ textStyle: 'caption2', weight: 'semibold' }), foregroundStyle(C.muted), lineLimit(1)]}>{s}</Text>;
   const big = (s: string) => <Text modifiers={[font({ textStyle: 'title2', weight: 'bold', design: 'rounded' }), foregroundStyle(C.text), monospacedDigit(), lineLimit(1), minimumScaleFactor(0.7)]}>{s}</Text>;
@@ -28,6 +30,7 @@ const BabyWidgetView = (props: BabyProps, env: WidgetEnvironment) => {
       <Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1), privacySensitive()]}>{props.name || props.title}</Text>
       {props.more ? <Text modifiers={[font({ textStyle: 'caption2' }), foregroundStyle(C.muted), lineLimit(1)]}>{props.more}</Text> : null}
       <Spacer />
+      {actionsEl}
     </HStack>
   );
 

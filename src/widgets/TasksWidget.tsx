@@ -4,8 +4,8 @@
  * Lecture seule (pas de case à cocher dans le widget : la synchronisation avec le coparent reste dans l'app).
  * Intitulés masqués en mode discret. Règles du moteur : tout passe par les props.
  */
-import { Chart, Gauge, HStack, Image, Spacer, Text, VStack } from '@expo/ui/swift-ui';
-import { containerBackground, cornerRadius, font, foregroundStyle, frame, gaugeStyle, lineLimit, minimumScaleFactor, monospacedDigit, privacySensitive, resizable, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
+import { Chart, Gauge, HStack, Image, Link, Spacer, Text, VStack } from '@expo/ui/swift-ui';
+import { background, containerBackground, cornerRadius, font, foregroundStyle, frame, gaugeStyle, lineLimit, minimumScaleFactor, monospacedDigit, padding, privacySensitive, resizable, shapes, tint, widgetURL } from '@expo/ui/swift-ui/modifiers';
 import { createWidget, type WidgetEnvironment } from 'expo-widgets';
 import type { TasksProps } from './model';
 
@@ -16,8 +16,10 @@ const TasksWidgetView = (props: TasksProps, env: WidgetEnvironment) => {
   const C = { bg: dark ? '#101614' : '#F4F8F5', text: dark ? '#EAF3EE' : '#18241E', muted: dark ? '#A2B5AA' : '#4F6157', accent: full ? (dark ? '#7CCFA3' : '#23704A') : (dark ? '#EAF3EE' : '#18241E'), late: full ? (dark ? '#FF8A80' : '#B3261E') : (dark ? '#EAF3EE' : '#18241E') };
   const fam = env.widgetFamily;
   const l = props.l || {};
+  const acts = (props.actions || []).slice(0, 2);
+  const actionsEl = acts.length && fam !== 'systemSmall' && fam !== 'accessoryRectangular' ? <HStack spacing={6}>{acts.map((a, i) => <Link key={String(i)} destination={a.u}><Text modifiers={[font({ textStyle: 'caption', weight: 'semibold' }), foregroundStyle(full ? C.bg : C.text), lineLimit(1), padding({ horizontal: 10, vertical: 5 }), background(full ? C.accent : { type: 'hierarchical', style: 'quaternary' }, shapes.capsule())]}>{a.t}</Text></Link>)}</HStack> : null;
   const logoEl = props.logo && full ? <Image uiImage={props.logo} modifiers={[resizable(), frame({ width: 16, height: 16 }), cornerRadius(4)]} /> : null;
-  const brand = <HStack spacing={5}>{logoEl}<Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title || 'HOMI'}</Text><Spacer /></HStack>;
+  const brand = <HStack spacing={5}>{logoEl}<Text modifiers={[font({ textStyle: 'caption', weight: 'bold' }), foregroundStyle(C.accent), lineLimit(1)]}>{props.title || 'HOMI'}</Text><Spacer />{actionsEl}</HStack>;
   const root = [containerBackground(C.bg, 'widget'), widgetURL(props.url || 'homi://')];
   const pct = Math.round((props.pct || 0) * 100);
   const label = (s: string) => <Text modifiers={[font({ textStyle: 'caption2', weight: 'semibold' }), foregroundStyle(C.muted), lineLimit(1)]}>{s}</Text>;
@@ -34,8 +36,7 @@ const TasksWidgetView = (props: TasksProps, env: WidgetEnvironment) => {
   }
 
   const ring = (
-    <Gauge value={props.pct} min={0} max={1} modifiers={[gaugeStyle('circularCapacity'), tint(C.accent)]}
-      currentValueLabel={<Text modifiers={[font({ size: 12, weight: 'bold', design: 'rounded' }), monospacedDigit()]}>{`${pct}%`}</Text>} />
+    <Gauge value={props.pct} min={0} max={1} modifiers={[gaugeStyle('circularCapacity'), tint(C.accent)]} />
   );
   const counts = (
     <VStack alignment="leading" spacing={1}>

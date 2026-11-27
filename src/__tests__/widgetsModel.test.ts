@@ -137,7 +137,7 @@ describe('déconnexion et vues', () => {
       expect(src).toContain("'widget';");
       expect(src).toContain(`createWidget('${name}'`);
       expect(src).toContain('containerBackground(');
-      expect(src).not.toMatch(/onPress|Button\b/); // lecture seule : aucune action depuis le widget
+      expect(src).not.toMatch(/onPress|Button\b/); // aucune écriture depuis le widget : les raccourcis ouvrent l'app (Link)
       expect(cfg).toContain(`name: '${name}'`);
     }
   });

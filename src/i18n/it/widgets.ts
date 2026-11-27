@@ -79,4 +79,13 @@ export const widgets = {
   'wg.diag.never': "non ancora inviato",
   'wg.diag.sent': "inviato alle {time} ({state}) · {n} voce/i salvata/e",
   'wg.diag.error': "errore: {msg}",
+  'wg.act.bottle': "+ Biberon",
+  'wg.act.feed': "+ Poppata",
+  'wg.act.nap': "+ Pisolino",
+  'wg.act.wake': "Sveglio",
+  'wg.act.cycle': "Segna la giornata",
+  'wg.act.preg': "Il mio monitoraggio",
+  'wg.act.note': "Segna",
+  'wg.act.task': "+ Attività",
+  'wg.act.appt': "+ Appuntamento",
 };

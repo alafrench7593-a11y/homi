@@ -27,7 +27,7 @@ Chaque widget existe en **petit, moyen et grand** format, et aussi sur l'écran 
 
 ### Choix techniques
 
-- **Aucune action depuis le widget** (pas de bouton). C'est ta consigne : une écriture faite par le widget n'atteindrait Supabase et le coparent qu'à la prochaine ouverture de l'app, ce qui risque des incohérences.
+- **Raccourcis d'ajout** (formats moyen et grand) : « + Biberon », « + Tétée », « + Sieste » / « Réveil », « + Tâche », « + Rendez-vous », « Noter ma journée ». Ils ouvrent l'écran de saisie de l'app (liens), sans écriture depuis le widget. C'est ta consigne : une écriture faite par le widget n'atteindrait Supabase et le coparent qu'à la prochaine ouverture de l'app, ce qui risque des incohérences.
 - **Aucune requête dédiée ni appel IA.**
   - Les widgets reprennent les données déjà chargées par l'app (`src/widgets/useWidgetsSync.ts`).
   - Une frise n'est renvoyée que si son contenu a changé (`src/widgets/push.ios.ts`).
@@ -110,7 +110,7 @@ Rien de ce qui suit ne peut être fait sans Mac ni appareil. Pour chaque point, 
 > - **Family tasks** — open, overdue and "assigned to me" tasks, tasks completed this week (gauge and chart), and the next due tasks.
 > - **Schedule** — next appointment with a live countdown, today's and this week's appointments, and the following ones. Past appointments disappear on their own.
 >
-> Widgets are read-only by design, so that data shared with a co-parent stays consistent. Tapping a widget opens the matching screen in HOMI. No AI request is made for widgets.
+> Medium and Large widgets include quick-add shortcuts (+ Bottle, + Feed, + Nap, + Task, + Appointment, Log my day) that open the matching entry screen in HOMI, so every entry is saved and synced with the co-parent through the app. Tapping elsewhere opens the matching screen. No AI request is made for widgets.
 >
 > **Privacy:** sensitive health information (cycle, contraception, pregnancy) is discreet by default and always hidden on a locked device. Users can show more details or hide first names and titles in Settings › Notifications › Widgets. Signing out clears every widget.
 >
